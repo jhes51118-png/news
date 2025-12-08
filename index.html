@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日國際財經速覽</title>
+    <style>
+        :root {
+            --primary-color: #5800cc; /* Yahoo 紫 */
+            --secondary-color: #004fb6; /* 鉅亨 藍 */
+            --accent-color: #ff3333;
+            --text-color: #333;
+            --bg-color: #f4f4f9;
+            --card-bg: #ffffff;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans TC", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* 頂部區域 */
+        header {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            border-left: 6px solid var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .header-text h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #2c3e50;
+        }
+        .header-text .date {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .source-indicator {
+            font-size: 13px;
+            background: #eee;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-left: 10px;
+            vertical-align: middle;
+            color: #666;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .source-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #ccc;
+            border-radius: 50%;
+        }
+        .source-yahoo .source-dot { background-color: #5800cc; }
+        .source-anue .source-dot { background-color: #004fb6; }
+        .source-google .source-dot { background-color: #ea4335; }
+        
+        /* 控制按鈕區 */
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            cursor: pointer;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-refresh {
+            background-color: #e2e8f0;
+            color: #475569;
+        }
+        .btn-refresh:hover {
+            background-color: #cbd5e1;
+        }
+        .btn-download {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .btn-download:hover {
+            background-color: #4600a3;
+            box-shadow: 0 2px 8px rgba(88, 0, 204, 0.3);
+        }
+
+        /* 新聞列表 */
+        .news-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .news-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            border: 1px solid #eee;
+            transition: transform 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .news-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.08);
+            border-color: #e0e0e0;
+        }
+        .news-index {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 40px;
+            font-weight: 900;
+            color: #f1f1f1;
+            line-height: 1;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .card-content {
+            position: relative;
+            z-index: 1;
+        }
+        .news-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            color: #1a202c;
+            padding-right: 40px;
+        }
+        .news-title a {
+            text-decoration: none;
+            color: inherit;
+        }
+        .news-title a:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+        .news-desc {
+            font-size: 15px;
+            color: #555;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        .news-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #888;
+            border-top: 1px solid #f0f0f0;
+            padding-top: 12px;
+        }
+        .source-tag {
+            background: #f0fdf4;
+            color: #166534;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        /* 狀態訊息 */
+        #status-msg {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+        .error {
+            color: var(--accent-color);
+            background: #fff0f0;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ffd0d0;
+        }
+        
+        /* 載入動畫 */
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="header-text">
+            <h1>🌎 國際財經快報</h1>
+            <div class="date">
+                <span id="current-date">正在載入...</span>
+                <span id="current-source-badge" class="source-indicator" style="display:none">
+                    <span class="source-dot"></span> <span id="source-name"></span>
+                </span>
+            </div>
+        </div>
+        <div class="controls">
+            <button class="btn-refresh" onclick="initFetch()">
+                🔄 重新整理
+            </button>
+            <button class="btn-download" onclick="downloadReport()">
+                💾 下載今日存檔
+            </button>
+        </div>
+    </header>
+
+    <div id="news-container" class="news-list">
+        <div id="status-msg">
+            <div class="spinner"></div>
+            正在建立連線...
+        </div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 30px; color: #aaa; font-size: 12px;">
+        Generated by AI Assistant
+    </div>
+</div>
+
+<script>
+    // 來源設定
+    // 技巧：我們不直接抓 Yahoo，而是透過 Google News 去搜尋 "site:tw.stock.yahoo.com 國際"
+    // 這樣可以繞過 Yahoo 的擋牆機制，但取得一模一樣的內容
+    const SOURCES = [
+        {
+            id: 'yahoo_via_google',
+            name: "Yahoo 財經 (Google通道)",
+            class: "source-yahoo",
+            // Google News RSS 搜尋指令：site:tw.stock.yahoo.com 加上 "國際" 關鍵字
+            url: 'https://news.google.com/rss/search?q=site:tw.stock.yahoo.com/news/+%E5%9C%8B%E9%9A%9B&hl=zh-TW&gl=TW&ceid=TW:zh-TW'
+        },
+        {
+            id: 'anue',
+            name: "鉅亨網 (國際)",
+            class: "source-anue",
+            url: 'https://news.cnyes.com/rss/cat/int_news'
+        },
+        {
+            id: 'google',
+            name: "Google 財經",
+            class: "source-google",
+            url: 'https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWvfSkwyMHZNRGx6TVdZU0FqaGhtUHBSWWlnQVAB?hl=zh-TW&gl=TW&ceid=TW%3Azh-TW'
+        }
+    ];
+
+    // 代理服務列表 (針對 Google News RSS 這些通常很穩定)
+    const PROXY_SERVICES = [
+        (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}&rand=${Math.random()}`,
+        (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+        (url) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
+    ];
+
+    function updateDate() {
+        const now = new Date();
+        const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+        document.getElementById('current-date').textContent = now.toLocaleDateString('zh-TW', options);
+    }
+
+    async function initFetch() {
+        updateDate();
+        const container = document.getElementById('news-container');
+        const badge = document.getElementById('current-source-badge');
+        badge.style.display = 'none';
+        
+        container.innerHTML = `
+            <div id="status-msg">
+                <div class="spinner"></div>
+                正在嘗試連線...
+            </div>
+        `;
+
+        // 依序嘗試所有來源
+        for (let source of SOURCES) {
+            console.log(`正在嘗試來源: ${source.name}`);
+            container.innerHTML = `
+                <div id="status-msg">
+                    <div class="spinner"></div>
+                    正在連線至 ${source.name}...
+                </div>
+            `;
+            
+            const items = await tryFetchSource(source.url, source.name);
+            
+            if (items && items.length > 0) {
+                renderNews(items, source);
+                return;
+            }
+        }
+
+        // 全部失敗
+        container.innerHTML = `
+            <div id="status-msg" class="error">
+                <h3>⚠️ 無法取得資料</h3>
+                <p>所有來源皆無法連線。</p>
+                <button onclick="initFetch()" style="margin-top:15px; padding: 8px 20px;">再試一次</button>
+            </div>
+        `;
+    }
+
+    async function tryFetchSource(rssUrl, sourceName) {
+        for (let i = 0; i < PROXY_SERVICES.length; i++) {
+            const proxyUrl = PROXY_SERVICES[i](rssUrl);
+            
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 6000); // 6秒
+
+                const response = await fetch(proxyUrl, { 
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const str = await response.text();
+                
+                if (str.includes('<rss') || str.includes('<feed') || str.includes('<item')) {
+                    const items = parseXML(str);
+                    if (items.length > 0) return items;
+                }
+            } catch (err) {
+                console.warn(`代理 ${i+1} 失敗 (${sourceName})`);
+            }
+        }
+        return null;
+    }
+
+    function parseXML(xmlString) {
+        try {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+            
+            let items = Array.from(xmlDoc.querySelectorAll("item"));
+            if (items.length === 0) items = Array.from(xmlDoc.querySelectorAll("entry"));
+
+            return items.map(item => {
+                const title = item.querySelector("title")?.textContent || "無標題";
+                let link = item.querySelector("link")?.textContent || "#";
+                if (item.querySelector("link")?.getAttribute("href")) {
+                    link = item.querySelector("link").getAttribute("href");
+                }
+                
+                // 嘗試抓取各種可能的描述欄位
+                let description = "";
+                const descNode = item.querySelector("description");
+                if (descNode) description = descNode.textContent;
+                
+                // Google News 有時會把內容放在 content:encoded 或 summary
+                if (!description || description.length < 10) {
+                     description = item.querySelector("summary")?.textContent || "";
+                }
+
+                const pubDate = item.querySelector("pubDate")?.textContent || 
+                                item.querySelector("published")?.textContent || "";
+                
+                return { title, link, description, pubDate };
+            });
+        } catch (e) {
+            console.error("XML Parse Error", e);
+            return [];
+        }
+    }
+
+    function renderNews(items, source) {
+        const container = document.getElementById('news-container');
+        const badge = document.getElementById('current-source-badge');
+        const sourceNameSpan = document.getElementById('source-name');
+        
+        badge.className = `source-indicator ${source.class}`;
+        badge.style.display = 'inline-flex';
+        sourceNameSpan.textContent = source.name;
+        
+        container.innerHTML = ''; 
+
+        items.forEach((item, index) => {
+            let cleanDesc = item.description.replace(/<[^>]*>?/gm, ''); 
+            cleanDesc = cleanDesc.replace(/&nbsp;/g, ' '); 
+            
+            const txt = document.createElement("textarea");
+            txt.innerHTML = cleanDesc;
+            cleanDesc = txt.value;
+
+            // 清理 Google News 來源標記
+            cleanDesc = cleanDesc.replace(/Yahoo奇摩股市.*/, '').replace(/閱讀全文.*/, '');
+            
+            if (cleanDesc.length > 100) cleanDesc = cleanDesc.substring(0, 98) + '...';
+            // 如果描述太短，給個提示
+            if (cleanDesc.trim().length < 5) cleanDesc = "(點擊標題查看詳細報導)";
+
+            let dateStr = item.pubDate;
+            try {
+                const pubDate = new Date(item.pubDate);
+                if (!isNaN(pubDate.getTime())) {
+                    dateStr = pubDate.toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+                }
+            } catch(e) {}
+
+            const card = document.createElement('div');
+            card.className = 'news-card';
+            card.innerHTML = `
+                <div class="news-index">${index + 1}</div>
+                <div class="card-content">
+                    <div class="news-title">
+                        <a href="${item.link}" target="_blank">${item.title}</a>
+                    </div>
+                    <div class="news-desc">${cleanDesc}</div>
+                    <div class="news-footer">
+                        <span>📅 ${dateStr}</span>
+                        <span class="source-tag">${source.name}</span>
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function downloadReport() {
+        const today = new Date().toISOString().split('T')[0];
+        const fileName = `國際財經快報_${today}.html`;
+        
+        const styles = document.getElementsByTagName('style')[0].innerText;
+        const newsContent = document.getElementById('news-container').innerHTML;
+        const dateText = document.getElementById('current-date').textContent;
+        const badgeHtml = document.getElementById('current-source-badge').outerHTML;
+
+        const staticHtml = `
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>國際財經快報 - ${today}</title>
+    <style>${styles}</style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-text">
+                <h1>🌎 國際財經快報 (存檔)</h1>
+                <div class="date">${dateText} ${badgeHtml}</div>
+            </div>
+            <div class="controls">
+                <span style="font-size:12px; color:#888;">此為靜態存檔</span>
+            </div>
+        </header>
+        <div class="news-list">
+            ${newsContent}
+        </div>
+        <div style="text-align: center; margin-top: 30px; color: #aaa; font-size: 12px;">
+            Generated by AI Assistant
+        </div>
+    </div>
+</body>
+</html>`;
+
+        const blob = new Blob([staticHtml], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    window.onload = initFetch;
+</script>
+
+</body>
+</html>
