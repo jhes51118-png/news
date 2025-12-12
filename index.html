@@ -1,501 +1,422 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>每日國際財經速覽</title>
+    <title>蓋倫 S15 暴擊流全攻略 | 德瑪西亞之力</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #5800cc; /* Yahoo 紫 */
-            --secondary-color: #004fb6; /* 鉅亨 藍 */
-            --accent-color: #ff3333;
-            --text-color: #333;
-            --bg-color: #f4f4f9;
-            --card-bg: #ffffff;
-        }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans TC", sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-            line-height: 1.6;
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #050a14;
+            color: #f0f0f0;
         }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
+        .text-gold {
+            color: #c8aa6e;
         }
-        
-        /* 頂部區域 */
-        header {
-            background: var(--card-bg);
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin-bottom: 25px;
-            border-left: 6px solid var(--primary-color);
+        .bg-gold {
+            background-color: #c8aa6e;
+        }
+        .border-gold {
+            border-color: #c8aa6e;
+        }
+        .demacia-gradient {
+            background: linear-gradient(135deg, #0a1428 0%, #091428 50%, #1e2328 100%);
+        }
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(200, 170, 110, 0.1);
+        }
+        .skill-key {
+            width: 40px;
+            height: 40px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        .header-text h1 {
-            margin: 0;
-            font-size: 24px;
-            color: #2c3e50;
-        }
-        .header-text .date {
-            color: #666;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-        .source-indicator {
-            font-size: 13px;
-            background: #eee;
-            padding: 4px 10px;
-            border-radius: 20px;
-            margin-left: 10px;
-            vertical-align: middle;
-            color: #666;
+            justify-content: center;
+            background: #1e2328;
+            border: 2px solid #c8aa6e;
+            color: #c8aa6e;
             font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .source-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #ccc;
-            border-radius: 50%;
-        }
-        .source-yahoo .source-dot { background-color: #5800cc; }
-        .source-anue .source-dot { background-color: #004fb6; }
-        .source-google .source-dot { background-color: #ea4335; }
-        
-        /* 控制按鈕區 */
-        .controls {
-            display: flex;
-            gap: 10px;
-        }
-        button {
-            cursor: pointer;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .btn-refresh {
-            background-color: #e2e8f0;
-            color: #475569;
-        }
-        .btn-refresh:hover {
-            background-color: #cbd5e1;
-        }
-        .btn-download {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        .btn-download:hover {
-            background-color: #4600a3;
-            box-shadow: 0 2px 8px rgba(88, 0, 204, 0.3);
-        }
-
-        /* 新聞列表 */
-        .news-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .news-card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-            border: 1px solid #eee;
-            transition: transform 0.2s;
-            position: relative;
-            overflow: hidden;
-        }
-        .news-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.08);
-            border-color: #e0e0e0;
-        }
-        .news-index {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 40px;
-            font-weight: 900;
-            color: #f1f1f1;
-            line-height: 1;
-            z-index: 0;
-            pointer-events: none;
-        }
-        .card-content {
-            position: relative;
-            z-index: 1;
-        }
-        .news-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin: 0 0 10px 0;
-            color: #1a202c;
-            padding-right: 40px;
-        }
-        .news-title a {
-            text-decoration: none;
-            color: inherit;
-        }
-        .news-title a:hover {
-            color: var(--primary-color);
-            text-decoration: underline;
-        }
-        .news-desc {
-            font-size: 15px;
-            color: #555;
-            margin-bottom: 15px;
-            line-height: 1.6;
-        }
-        .news-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 13px;
-            color: #888;
-            border-top: 1px solid #f0f0f0;
-            padding-top: 12px;
-        }
-        .source-tag {
-            background: #f0fdf4;
-            color: #166534;
-            padding: 2px 8px;
             border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
         }
-        
-        /* 狀態訊息 */
-        #status-msg {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-            font-style: italic;
-        }
-        .error {
-            color: var(--accent-color);
-            background: #fff0f0;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #ffd0d0;
-        }
-        
-        /* 載入動畫 */
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--primary-color);
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
+        .spin-animation:hover i {
             animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
         }
         @keyframes spin {
-            0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+        .nav-link {
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: #c8aa6e;
+            transition: width 0.3s;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a1428;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c8aa6e;
+            border-radius: 4px;
         }
     </style>
 </head>
-<body>
+<body class="demacia-gradient min-h-screen flex flex-col">
 
-<div class="container">
-    <header>
-        <div class="header-text">
-            <h1>🌎 國際財經快報</h1>
-            <div class="date">
-                <span id="current-date">正在載入...</span>
-                <span id="current-source-badge" class="source-indicator" style="display:none">
-                    <span class="source-dot"></span> <span id="source-name"></span>
-                </span>
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 bg-[#0a1428]/95 backdrop-blur-md border-b border-[#1e2328] shadow-lg">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-shield-alt text-3xl text-gold"></i>
+                <h1 class="text-2xl font-bold tracking-wider text-white">GAREN <span class="text-gold text-sm font-normal ml-2">S15 GUIDE</span></h1>
             </div>
+            <div class="hidden md:flex gap-8 text-sm font-medium text-gray-300">
+                <a href="#overview" class="nav-link hover:text-gold transition">總覽</a>
+                <a href="#runes" class="nav-link hover:text-gold transition">符文</a>
+                <a href="#items" class="nav-link hover:text-gold transition">出裝</a>
+                <a href="#gameplay" class="nav-link hover:text-gold transition">玩法</a>
+            </div>
+            <button class="md:hidden text-gold text-xl" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
-        <div class="controls">
-            <button class="btn-refresh" onclick="initFetch()">
-                🔄 重新整理
-            </button>
-            <button class="btn-download" onclick="downloadReport()">
-                💾 下載今日存檔
-            </button>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-[#1e2328] border-t border-gray-700 p-4">
+            <a href="#overview" class="block py-2 text-gray-300 hover:text-gold">總覽</a>
+            <a href="#runes" class="block py-2 text-gray-300 hover:text-gold">符文</a>
+            <a href="#items" class="block py-2 text-gray-300 hover:text-gold">出裝</a>
+            <a href="#gameplay" class="block py-2 text-gray-300 hover:text-gold">玩法</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header id="overview" class="relative pt-20 pb-32 overflow-hidden">
+        <div class="absolute inset-0 bg-[url('https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Garen_0.jpg')] bg-cover bg-center opacity-20"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-[#050a14]/80 to-[#050a14]"></div>
+        
+        <div class="container mx-auto px-4 relative z-10 text-center">
+            <div class="inline-block px-4 py-1 border border-gold/50 rounded-full bg-gold/10 text-gold text-xs font-bold mb-6 tracking-widest uppercase">
+                Season 15 Meta
+            </div>
+            <h2 class="text-5xl md:text-7xl font-black text-white mb-6 leading-tight">
+                轉動，<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-gold to-yellow-200">為了勝利。</span>
+            </h2>
+            <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-10">
+                告別笨重坦克，S15 蓋倫是以暴擊流為核心的高機動刺客。
+                <br>一套技能，轉瞬即逝，德瑪西亞的正義從不遲到。
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#items" class="px-8 py-3 bg-gold text-[#0a1428] font-bold rounded hover:bg-yellow-500 transition shadow-[0_0_15px_rgba(200,170,110,0.4)]">
+                    查看最新出裝
+                </a>
+                <a href="#runes" class="px-8 py-3 border border-gray-600 text-gray-300 font-bold rounded hover:border-gold hover:text-gold transition">
+                    符文配置
+                </a>
+            </div>
         </div>
     </header>
 
-    <div id="news-container" class="news-list">
-        <div id="status-msg">
-            <div class="spinner"></div>
-            正在建立連線...
-        </div>
-    </div>
-    
-    <div style="text-align: center; margin-top: 30px; color: #aaa; font-size: 12px;">
-        Generated by AI Assistant
-    </div>
-</div>
+    <!-- Content Container -->
+    <main class="container mx-auto px-4 -mt-20 relative z-20 space-y-24 mb-20">
 
-<script>
-    // 來源設定
-    // 技巧：我們不直接抓 Yahoo，而是透過 Google News 去搜尋 "site:tw.stock.yahoo.com 國際"
-    // 這樣可以繞過 Yahoo 的擋牆機制，但取得一模一樣的內容
-    const SOURCES = [
-        {
-            id: 'yahoo_via_google',
-            name: "Yahoo 財經 (Google通道)",
-            class: "source-yahoo",
-            // Google News RSS 搜尋指令：site:tw.stock.yahoo.com 加上 "國際" 關鍵字
-            url: 'https://news.google.com/rss/search?q=site:tw.stock.yahoo.com/news/+%E5%9C%8B%E9%9A%9B&hl=zh-TW&gl=TW&ceid=TW:zh-TW'
-        },
-        {
-            id: 'anue',
-            name: "鉅亨網 (國際)",
-            class: "source-anue",
-            url: 'https://news.cnyes.com/rss/cat/int_news'
-        },
-        {
-            id: 'google',
-            name: "Google 財經",
-            class: "source-google",
-            url: 'https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWvfSkwyMHZNRGx6TVdZU0FqaGhtUHBSWWlnQVAB?hl=zh-TW&gl=TW&ceid=TW%3Azh-TW'
-        }
-    ];
-
-    // 代理服務列表 (針對 Google News RSS 這些通常很穩定)
-    const PROXY_SERVICES = [
-        (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}&rand=${Math.random()}`,
-        (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-        (url) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
-    ];
-
-    function updateDate() {
-        const now = new Date();
-        const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
-        document.getElementById('current-date').textContent = now.toLocaleDateString('zh-TW', options);
-    }
-
-    async function initFetch() {
-        updateDate();
-        const container = document.getElementById('news-container');
-        const badge = document.getElementById('current-source-badge');
-        badge.style.display = 'none';
-        
-        container.innerHTML = `
-            <div id="status-msg">
-                <div class="spinner"></div>
-                正在嘗試連線...
-            </div>
-        `;
-
-        // 依序嘗試所有來源
-        for (let source of SOURCES) {
-            console.log(`正在嘗試來源: ${source.name}`);
-            container.innerHTML = `
-                <div id="status-msg">
-                    <div class="spinner"></div>
-                    正在連線至 ${source.name}...
+        <!-- Quick Stats / Skill Order -->
+        <section class="grid md:grid-cols-3 gap-6">
+            <div class="md:col-span-2 bg-[#1e2328]/90 backdrop-blur border border-gray-700 p-6 rounded-lg shadow-xl">
+                <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <i class="fas fa-layer-group text-gold"></i> 技能加點順序
+                </h3>
+                <div class="flex items-center justify-between md:justify-start md:gap-12">
+                    <div class="text-center">
+                        <div class="skill-key mx-auto mb-2 text-xl spin-animation cursor-pointer"><i class="fas fa-sync-alt"></i></div>
+                        <div class="text-gold font-bold text-2xl">E</div>
+                        <div class="text-xs text-gray-400 mt-1">優先點滿</div>
+                        <div class="text-[10px] text-gray-500">主傷害/清兵</div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-600"></i>
+                    <div class="text-center">
+                        <div class="skill-key mx-auto mb-2 text-xl"><i class="fas fa-gavel"></i></div>
+                        <div class="text-gold font-bold text-2xl">Q</div>
+                        <div class="text-xs text-gray-400 mt-1">副點</div>
+                        <div class="text-[10px] text-gray-500">加速/沉默</div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-600"></i>
+                    <div class="text-center">
+                        <div class="skill-key mx-auto mb-2 text-xl"><i class="fas fa-shield-virus"></i></div>
+                        <div class="text-gold font-bold text-2xl">W</div>
+                        <div class="text-xs text-gray-400 mt-1">最後</div>
+                        <div class="text-[10px] text-gray-500">減傷/韌性</div>
+                    </div>
                 </div>
-            `;
-            
-            const items = await tryFetchSource(source.url, source.name);
-            
-            if (items && items.length > 0) {
-                renderNews(items, source);
-                return;
-            }
-        }
-
-        // 全部失敗
-        container.innerHTML = `
-            <div id="status-msg" class="error">
-                <h3>⚠️ 無法取得資料</h3>
-                <p>所有來源皆無法連線。</p>
-                <button onclick="initFetch()" style="margin-top:15px; padding: 8px 20px;">再試一次</button>
+                <div class="mt-6 pt-4 border-t border-gray-700 text-sm text-gray-400">
+                    <i class="fas fa-info-circle text-gold mr-1"></i> 
+                    <strong>S15 重點：</strong> E 技能吃攻速與暴擊係數，是暴擊流的核心。
+                </div>
             </div>
-        `;
-    }
 
-    async function tryFetchSource(rssUrl, sourceName) {
-        for (let i = 0; i < PROXY_SERVICES.length; i++) {
-            const proxyUrl = PROXY_SERVICES[i](rssUrl);
+            <div class="bg-[#1e2328]/90 backdrop-blur border border-gray-700 p-6 rounded-lg shadow-xl flex flex-col justify-center items-center text-center">
+                <h3 class="text-lg font-bold text-gray-300 mb-2">勝率趨勢</h3>
+                <div class="text-5xl font-bold text-green-400 mb-1">52.4%</div>
+                <div class="text-sm text-gray-500">Emerald+ Rank</div>
+                <div class="mt-4 px-3 py-1 bg-green-900/30 text-green-400 text-xs rounded border border-green-800">
+                    S Tier 上路霸主
+                </div>
+            </div>
+        </section>
+
+        <!-- Runes Section -->
+        <section id="runes">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="h-1 w-12 bg-gold"></div>
+                <h2 class="text-3xl font-bold text-white">符文配置</h2>
+            </div>
             
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 6000); // 6秒
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Phase Rush -->
+                <div class="bg-[#0a1428] border border-blue-900/50 p-6 rounded-xl card-hover relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">90% 首選</div>
+                    <div class="flex items-start gap-4 mb-6">
+                        <div class="w-16 h-16 rounded-full bg-blue-900/50 border-2 border-blue-400 flex items-center justify-center text-blue-300 text-3xl">
+                            <i class="fas fa-wind"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-blue-100">相位衝擊 (Phase Rush)</h3>
+                            <p class="text-blue-300/80 text-sm mt-1">打帶跑戰術核心，高容錯率</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 text-gray-300">
+                            <span class="w-8 h-8 rounded bg-blue-900/30 flex items-center justify-center text-xs border border-blue-800">主</span>
+                            <span>靈光披風 • 迅捷 • 風暴凝聚</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-gray-300">
+                            <span class="w-8 h-8 rounded bg-yellow-900/30 flex items-center justify-center text-xs border border-yellow-800">副</span>
+                            <span>凱旋 • 傳奇:加速</span>
+                        </div>
+                    </div>
+                </div>
 
-                const response = await fetch(proxyUrl, { 
-                    signal: controller.signal
+                <!-- Conqueror -->
+                <div class="bg-[#0a1428] border border-yellow-900/50 p-6 rounded-xl card-hover group">
+                    <div class="flex items-start gap-4 mb-6">
+                        <div class="w-16 h-16 rounded-full bg-yellow-900/50 border-2 border-yellow-600 flex items-center justify-center text-yellow-500 text-3xl">
+                            <i class="fas fa-fist-raised"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-yellow-100">征服者 (Conqueror)</h3>
+                            <p class="text-yellow-500/80 text-sm mt-1">對抗純坦克/站樁對拼</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 text-gray-300">
+                            <span class="w-8 h-8 rounded bg-yellow-900/30 flex items-center justify-center text-xs border border-yellow-800">主</span>
+                            <span>凱旋 • 傳奇:加速 • 堅毅不倒</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-gray-300">
+                            <span class="w-8 h-8 rounded bg-green-900/30 flex items-center justify-center text-xs border border-green-800">副</span>
+                            <span>爆破 • 甦醒/骨甲</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Items Section -->
+        <section id="items">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="h-1 w-12 bg-gold"></div>
+                <h2 class="text-3xl font-bold text-white">核心出裝</h2>
+            </div>
+
+            <!-- Build Path -->
+            <div class="bg-[#1e2328] border border-gold/30 rounded-xl p-8 shadow-2xl relative">
+                <div class="absolute -top-3 left-8 bg-gold text-[#0a1428] font-bold px-4 py-1 text-sm rounded">S15 暴擊流標準順序</div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 items-center mt-4">
+                    <!-- Item 1 -->
+                    <div class="text-center group">
+                        <div class="w-20 h-20 mx-auto bg-[#0a1428] border-2 border-gold rounded-lg mb-3 flex items-center justify-center text-4xl text-purple-400 group-hover:scale-110 transition duration-300 shadow-[0_0_15px_rgba(200,170,110,0.2)]">
+                            <i class="fas fa-gavel"></i>
+                        </div>
+                        <h4 class="text-gold font-bold">挺進破壞者</h4>
+                        <p class="text-xs text-gray-400 mt-1">必備核心<br>主動緩速+清兵</p>
+                    </div>
+                    
+                    <i class="fas fa-arrow-right text-gray-600 hidden md:block text-center text-xl"></i>
+
+                    <!-- Item 2 -->
+                    <div class="text-center group">
+                        <div class="w-20 h-20 mx-auto bg-[#0a1428] border-2 border-blue-400 rounded-lg mb-3 flex items-center justify-center text-4xl text-blue-200 group-hover:scale-110 transition duration-300">
+                            <i class="fas fa-shoe-prints"></i>
+                        </div>
+                        <h4 class="text-blue-200 font-bold">狂戰士護脛</h4>
+                        <p class="text-xs text-gray-400 mt-1">攻速鞋<br>增加 E 轉速</p>
+                    </div>
+
+                    <i class="fas fa-arrow-right text-gray-600 hidden md:block text-center text-xl"></i>
+
+                    <!-- Item 3 -->
+                    <div class="text-center group">
+                        <div class="w-20 h-20 mx-auto bg-[#0a1428] border-2 border-green-400 rounded-lg mb-3 flex items-center justify-center text-4xl text-green-300 group-hover:scale-110 transition duration-300">
+                            <i class="fas fa-ghost"></i>
+                        </div>
+                        <h4 class="text-green-300 font-bold">幻影之舞</h4>
+                        <p class="text-xs text-gray-400 mt-1">穿透單位<br>高跑速+暴擊</p>
+                    </div>
+                    
+                    <i class="fas fa-arrow-right text-gray-600 hidden md:block text-center text-xl"></i>
+
+                    <!-- Item 4 -->
+                    <div class="text-center group">
+                        <div class="w-20 h-20 mx-auto bg-[#0a1428] border-2 border-red-500 rounded-lg mb-3 flex items-center justify-center text-4xl text-red-500 group-hover:scale-110 transition duration-300 shadow-[0_0_15px_rgba(220,38,38,0.3)]">
+                            <i class="fas fa-infinity"></i>
+                        </div>
+                        <h4 class="text-red-400 font-bold">無盡之刃</h4>
+                        <p class="text-xs text-gray-400 mt-1">傷害質變<br>一套秒殺軟皮</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Situational Items -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                <div class="bg-[#1e2328] p-4 rounded border border-gray-700 hover:border-gold/50 transition">
+                    <h5 class="text-sm text-red-400 font-bold mb-1">致死宣告</h5>
+                    <p class="text-xs text-gray-500">重創/破甲</p>
+                </div>
+                <div class="bg-[#1e2328] p-4 rounded border border-gray-700 hover:border-gold/50 transition">
+                    <h5 class="text-sm text-orange-400 font-bold mb-1">亡者板甲</h5>
+                    <p class="text-xs text-gray-500">跑速/抓人</p>
+                </div>
+                <div class="bg-[#1e2328] p-4 rounded border border-gray-700 hover:border-gold/50 transition">
+                    <h5 class="text-sm text-purple-400 font-bold mb-1">史特拉克手套</h5>
+                    <p class="text-xs text-gray-500">防爆發/護盾</p>
+                </div>
+                <div class="bg-[#1e2328] p-4 rounded border border-gray-700 hover:border-gold/50 transition">
+                    <h5 class="text-sm text-green-400 font-bold mb-1">自然之力</h5>
+                    <p class="text-xs text-gray-500">對抗多AP</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gameplay Tips -->
+        <section id="gameplay" class="grid md:grid-cols-2 gap-8">
+            <div>
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="h-1 w-12 bg-gold"></div>
+                    <h2 class="text-3xl font-bold text-white">實戰技巧</h2>
+                </div>
+                <div class="space-y-4">
+                    <div class="bg-[#1e2328] p-5 rounded-lg border-l-4 border-blue-500">
+                        <h4 class="font-bold text-white mb-2">⚡ 相位衝擊連招</h4>
+                        <p class="text-gray-400 text-sm">普攻 <i class="fas fa-arrow-right text-xs mx-1"></i> Q <i class="fas fa-arrow-right text-xs mx-1"></i> E (轉兩圈) <i class="fas fa-arrow-right text-xs mx-1"></i> 觸發相位跑掉。這是最無賴的換血方式。</p>
+                    </div>
+                    <div class="bg-[#1e2328] p-5 rounded-lg border-l-4 border-red-500">
+                        <h4 class="font-bold text-white mb-2">🗡️ 草叢陰人 (One-Shot)</h4>
+                        <p class="text-gray-400 text-sm">Q (沉默) <i class="fas fa-arrow-right text-xs mx-1"></i> 挺進 (緩速) <i class="fas fa-arrow-right text-xs mx-1"></i> E (跟著轉) <i class="fas fa-arrow-right text-xs mx-1"></i> R (斬殺)。配合暴擊裝備，脆皮英雄沒有反應時間。</p>
+                    </div>
+                    <div class="bg-[#1e2328] p-5 rounded-lg border-l-4 border-gold">
+                        <h4 class="font-bold text-white mb-2">🛡️ W 的使用藝術</h4>
+                        <p class="text-gray-400 text-sm">W 開啟的前 0.75 秒有高額護盾與韌性。務必在對手丟出最強控制技（如雷玟暈眩、諾手拉人）的瞬間開啟。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Counters -->
+            <div class="bg-[#0a1428] border border-red-900/30 p-6 rounded-xl">
+                <h3 class="text-xl font-bold text-red-400 mb-6 flex items-center gap-2">
+                    <i class="fas fa-exclamation-triangle"></i> 危險對局
+                </h3>
+                <div class="space-y-4">
+                    <div class="flex items-center gap-4 p-3 hover:bg-red-900/10 rounded transition">
+                        <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center font-bold text-white">C</div>
+                        <div>
+                            <div class="font-bold text-white">卡蜜兒 (Camille)</div>
+                            <div class="text-xs text-gray-500">護盾與真實傷害完剋。應對：主W，騙護盾。</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 p-3 hover:bg-red-900/10 rounded transition">
+                        <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center font-bold text-white">K</div>
+                        <div>
+                            <div class="font-bold text-white">凱爾 (Kayle)</div>
+                            <div class="text-xs text-gray-500">遠程風箏惡夢。應對：相位衝擊，Call打野。</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 p-3 hover:bg-red-900/10 rounded transition">
+                        <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center font-bold text-white">V</div>
+                        <div>
+                            <div class="font-bold text-white">汎 (Vayne)</div>
+                            <div class="text-xs text-gray-500">上路最大的敵人。應對：帶掃透鏡，布甲鞋，抗壓。</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#050a14] border-t border-[#1e2328] py-12 mt-auto">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-2xl font-bold text-gold mb-4">DEMACIA</h2>
+            <p class="text-gray-600 text-sm max-w-md mx-auto">
+                此攻略基於 S15 版本 Meta 製作。<br>
+                "恐懼是萬惡之首。" - 蓋倫
+            </p>
+            <div class="mt-8 flex justify-center gap-6 text-gray-500">
+                <a href="#" class="hover:text-gold transition"><i class="fab fa-github"></i></a>
+                <a href="#" class="hover:text-gold transition"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="hover:text-gold transition"><i class="fab fa-discord"></i></a>
+            </div>
+            <p class="text-xs text-gray-800 mt-8">
+                &copy; 2025 League Guide. Not affiliated with Riot Games.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
                 });
-                clearTimeout(timeoutId);
-
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                
-                const str = await response.text();
-                
-                if (str.includes('<rss') || str.includes('<feed') || str.includes('<item')) {
-                    const items = parseXML(str);
-                    if (items.length > 0) return items;
-                }
-            } catch (err) {
-                console.warn(`代理 ${i+1} 失敗 (${sourceName})`);
-            }
-        }
-        return null;
-    }
-
-    function parseXML(xmlString) {
-        try {
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(xmlString, "text/xml");
-            
-            let items = Array.from(xmlDoc.querySelectorAll("item"));
-            if (items.length === 0) items = Array.from(xmlDoc.querySelectorAll("entry"));
-
-            return items.map(item => {
-                const title = item.querySelector("title")?.textContent || "無標題";
-                let link = item.querySelector("link")?.textContent || "#";
-                if (item.querySelector("link")?.getAttribute("href")) {
-                    link = item.querySelector("link").getAttribute("href");
-                }
-                
-                // 嘗試抓取各種可能的描述欄位
-                let description = "";
-                const descNode = item.querySelector("description");
-                if (descNode) description = descNode.textContent;
-                
-                // Google News 有時會把內容放在 content:encoded 或 summary
-                if (!description || description.length < 10) {
-                     description = item.querySelector("summary")?.textContent || "";
-                }
-
-                const pubDate = item.querySelector("pubDate")?.textContent || 
-                                item.querySelector("published")?.textContent || "";
-                
-                return { title, link, description, pubDate };
             });
-        } catch (e) {
-            console.error("XML Parse Error", e);
-            return [];
-        }
-    }
-
-    function renderNews(items, source) {
-        const container = document.getElementById('news-container');
-        const badge = document.getElementById('current-source-badge');
-        const sourceNameSpan = document.getElementById('source-name');
-        
-        badge.className = `source-indicator ${source.class}`;
-        badge.style.display = 'inline-flex';
-        sourceNameSpan.textContent = source.name;
-        
-        container.innerHTML = ''; 
-
-        items.forEach((item, index) => {
-            let cleanDesc = item.description.replace(/<[^>]*>?/gm, ''); 
-            cleanDesc = cleanDesc.replace(/&nbsp;/g, ' '); 
-            
-            const txt = document.createElement("textarea");
-            txt.innerHTML = cleanDesc;
-            cleanDesc = txt.value;
-
-            // 清理 Google News 來源標記
-            cleanDesc = cleanDesc.replace(/Yahoo奇摩股市.*/, '').replace(/閱讀全文.*/, '');
-            
-            if (cleanDesc.length > 100) cleanDesc = cleanDesc.substring(0, 98) + '...';
-            // 如果描述太短，給個提示
-            if (cleanDesc.trim().length < 5) cleanDesc = "(點擊標題查看詳細報導)";
-
-            let dateStr = item.pubDate;
-            try {
-                const pubDate = new Date(item.pubDate);
-                if (!isNaN(pubDate.getTime())) {
-                    dateStr = pubDate.toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
-                }
-            } catch(e) {}
-
-            const card = document.createElement('div');
-            card.className = 'news-card';
-            card.innerHTML = `
-                <div class="news-index">${index + 1}</div>
-                <div class="card-content">
-                    <div class="news-title">
-                        <a href="${item.link}" target="_blank">${item.title}</a>
-                    </div>
-                    <div class="news-desc">${cleanDesc}</div>
-                    <div class="news-footer">
-                        <span>📅 ${dateStr}</span>
-                        <span class="source-tag">${source.name}</span>
-                    </div>
-                </div>
-            `;
-            container.appendChild(card);
         });
-    }
 
-    function downloadReport() {
-        const today = new Date().toISOString().split('T')[0];
-        const fileName = `國際財經快報_${today}.html`;
-        
-        const styles = document.getElementsByTagName('style')[0].innerText;
-        const newsContent = document.getElementById('news-container').innerHTML;
-        const dateText = document.getElementById('current-date').textContent;
-        const badgeHtml = document.getElementById('current-source-badge').outerHTML;
+        // Add scroll animation for cards
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('opacity-100', 'translate-y-0');
+                    entry.target.classList.remove('opacity-0', 'translate-y-10');
+                }
+            });
+        }, { threshold: 0.1 });
 
-        const staticHtml = `
-<!DOCTYPE html>
-<html lang="zh-Hant">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>國際財經快報 - ${today}</title>
-    <style>${styles}</style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <div class="header-text">
-                <h1>🌎 國際財經快報 (存檔)</h1>
-                <div class="date">${dateText} ${badgeHtml}</div>
-            </div>
-            <div class="controls">
-                <span style="font-size:12px; color:#888;">此為靜態存檔</span>
-            </div>
-        </header>
-        <div class="news-list">
-            ${newsContent}
-        </div>
-        <div style="text-align: center; margin-top: 30px; color: #aaa; font-size: 12px;">
-            Generated by AI Assistant
-        </div>
-    </div>
-</body>
-</html>`;
-
-        const blob = new Blob([staticHtml], { type: 'text/html' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-
-    window.onload = initFetch;
-</script>
-
+        document.querySelectorAll('section > div').forEach((el) => {
+            el.classList.add('transition', 'duration-700', 'opacity-0', 'translate-y-10');
+            observer.observe(el);
+        });
+    </script>
 </body>
 </html>
