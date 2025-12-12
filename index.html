@@ -3,34 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>蓋倫 S15 暴擊流全攻略 | 德瑪西亞之力</title>
+    <title>蓋倫 S15 不滅坦克流攻略 | 德瑪西亞之盾</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Noto Sans TC', sans-serif;
-            background-color: #050a14;
-            color: #f0f0f0;
+            background-color: #0f172a; /* 更深沈的藍色，強調厚重感 */
+            color: #e2e8f0;
         }
         .text-gold {
-            color: #c8aa6e;
+            color: #fbbf24;
         }
         .bg-gold {
-            background-color: #c8aa6e;
+            background-color: #fbbf24;
         }
         .border-gold {
-            border-color: #c8aa6e;
+            border-color: #fbbf24;
         }
-        .demacia-gradient {
-            background: linear-gradient(135deg, #0a1428 0%, #091428 50%, #1e2328 100%);
+        .tank-gradient {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
         }
         .card-hover {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .card-hover:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(200, 170, 110, 0.1);
+            box-shadow: 0 10px 20px rgba(96, 165, 250, 0.1);
         }
         .skill-key {
             width: 40px;
@@ -38,17 +38,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #1e2328;
-            border: 2px solid #c8aa6e;
-            color: #c8aa6e;
+            background: #1e293b;
+            border: 2px solid #94a3b8;
+            color: #e2e8f0;
             font-weight: bold;
             border-radius: 4px;
-        }
-        .spin-animation:hover i {
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            100% { transform: rotate(360deg); }
         }
         .nav-link {
             position: relative;
@@ -60,7 +54,7 @@
             height: 2px;
             bottom: -4px;
             left: 0;
-            background-color: #c8aa6e;
+            background-color: #fbbf24;
             transition: width 0.3s;
         }
         .nav-link:hover::after {
@@ -71,63 +65,63 @@
             width: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #0a1428;
+            background: #0f172a;
         }
         ::-webkit-scrollbar-thumb {
-            background: #c8aa6e;
+            background: #475569;
             border-radius: 4px;
         }
     </style>
 </head>
-<body class="demacia-gradient min-h-screen flex flex-col">
+<body class="tank-gradient min-h-screen flex flex-col">
 
     <!-- Navbar -->
-    <nav class="sticky top-0 z-50 bg-[#0a1428]/95 backdrop-blur-md border-b border-[#1e2328] shadow-lg">
+    <nav class="sticky top-0 z-50 bg-[#0f172a]/95 backdrop-blur-md border-b border-gray-700 shadow-lg">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <i class="fas fa-shield-alt text-3xl text-gold"></i>
-                <h1 class="text-2xl font-bold tracking-wider text-white">GAREN <span class="text-gold text-sm font-normal ml-2">S15 GUIDE</span></h1>
+                <i class="fas fa-shield-alt text-3xl text-green-500"></i>
+                <h1 class="text-2xl font-bold tracking-wider text-white">GAREN <span class="text-green-500 text-sm font-normal ml-2">TANK BUILD</span></h1>
             </div>
             <div class="hidden md:flex gap-8 text-sm font-medium text-gray-300">
-                <a href="#overview" class="nav-link hover:text-gold transition">總覽</a>
-                <a href="#runes" class="nav-link hover:text-gold transition">符文</a>
-                <a href="#items" class="nav-link hover:text-gold transition">出裝</a>
-                <a href="#gameplay" class="nav-link hover:text-gold transition">玩法</a>
+                <a href="#overview" class="nav-link hover:text-green-400 transition">總覽</a>
+                <a href="#runes" class="nav-link hover:text-green-400 transition">不滅符文</a>
+                <a href="#items" class="nav-link hover:text-green-400 transition">坦克出裝</a>
+                <a href="#gameplay" class="nav-link hover:text-green-400 transition">實戰技巧</a>
             </div>
-            <button class="md:hidden text-gold text-xl" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+            <button class="md:hidden text-green-500 text-xl" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
                 <i class="fas fa-bars"></i>
             </button>
         </div>
         <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden bg-[#1e2328] border-t border-gray-700 p-4">
-            <a href="#overview" class="block py-2 text-gray-300 hover:text-gold">總覽</a>
-            <a href="#runes" class="block py-2 text-gray-300 hover:text-gold">符文</a>
-            <a href="#items" class="block py-2 text-gray-300 hover:text-gold">出裝</a>
-            <a href="#gameplay" class="block py-2 text-gray-300 hover:text-gold">玩法</a>
+        <div id="mobile-menu" class="hidden md:hidden bg-[#1e293b] border-t border-gray-700 p-4">
+            <a href="#overview" class="block py-2 text-gray-300 hover:text-green-400">總覽</a>
+            <a href="#runes" class="block py-2 text-gray-300 hover:text-green-400">符文</a>
+            <a href="#items" class="block py-2 text-gray-300 hover:text-green-400">出裝</a>
+            <a href="#gameplay" class="block py-2 text-gray-300 hover:text-green-400">玩法</a>
         </div>
     </nav>
 
     <!-- Hero Section -->
     <header id="overview" class="relative pt-20 pb-32 overflow-hidden">
         <div class="absolute inset-0 bg-[url('https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Garen_0.jpg')] bg-cover bg-center opacity-20"></div>
-        <div class="absolute inset-0 bg-gradient-to-b from-[#050a14]/80 to-[#050a14]"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-[#0f172a]/80 to-[#0f172a]"></div>
         
         <div class="container mx-auto px-4 relative z-10 text-center">
-            <div class="inline-block px-4 py-1 border border-gold/50 rounded-full bg-gold/10 text-gold text-xs font-bold mb-6 tracking-widest uppercase">
-                Season 15 Meta
+            <div class="inline-block px-4 py-1 border border-green-500/50 rounded-full bg-green-500/10 text-green-400 text-xs font-bold mb-6 tracking-widest uppercase">
+                S15 Tank Meta
             </div>
             <h2 class="text-5xl md:text-7xl font-black text-white mb-6 leading-tight">
-                轉動，<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-gold to-yellow-200">為了勝利。</span>
+                屹立不搖，<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600">絕對防禦。</span>
             </h2>
             <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-10">
-                告別笨重坦克，S15 蓋倫是以暴擊流為核心的高機動刺客。
-                <br>一套技能，轉瞬即逝，德瑪西亞的正義從不遲到。
+                不需要躲草叢，不需要複雜連招。
+                <br>正面硬剛，吸收傷害，成為隊伍最堅實的盾牌。
             </p>
             <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="#items" class="px-8 py-3 bg-gold text-[#0a1428] font-bold rounded hover:bg-yellow-500 transition shadow-[0_0_15px_rgba(200,170,110,0.4)]">
-                    查看最新出裝
+                <a href="#items" class="px-8 py-3 bg-green-600 text-white font-bold rounded hover:bg-green-700 transition shadow-[0_0_15px_rgba(34,197,94,0.4)]">
+                    查看坦克出裝
                 </a>
-                <a href="#runes" class="px-8 py-3 border border-gray-600 text-gray-300 font-bold rounded hover:border-gold hover:text-gold transition">
+                <a href="#runes" class="px-8 py-3 border border-gray-600 text-gray-300 font-bold rounded hover:border-green-400 hover:text-green-400 transition">
                     符文配置
                 </a>
             </div>
@@ -137,105 +131,65 @@
     <!-- Content Container -->
     <main class="container mx-auto px-4 -mt-20 relative z-20 space-y-24 mb-20">
 
-        <!-- Quick Stats / Skill Order -->
-        <section class="grid md:grid-cols-3 gap-6">
-            <div class="md:col-span-2 bg-[#1e2328]/90 backdrop-blur border border-gray-700 p-6 rounded-lg shadow-xl">
-                <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <i class="fas fa-layer-group text-gold"></i> 技能加點順序
-                </h3>
-                <div class="flex items-center justify-between md:justify-start md:gap-12">
-                    <div class="text-center">
-                        <div class="skill-key mx-auto mb-2 text-xl spin-animation cursor-pointer"><i class="fas fa-sync-alt"></i></div>
-                        <div class="text-gold font-bold text-2xl">E</div>
-                        <div class="text-xs text-gray-400 mt-1">優先點滿</div>
-                        <div class="text-[10px] text-gray-500">主傷害/清兵</div>
-                    </div>
-                    <i class="fas fa-chevron-right text-gray-600"></i>
-                    <div class="text-center">
-                        <div class="skill-key mx-auto mb-2 text-xl"><i class="fas fa-gavel"></i></div>
-                        <div class="text-gold font-bold text-2xl">Q</div>
-                        <div class="text-xs text-gray-400 mt-1">副點</div>
-                        <div class="text-[10px] text-gray-500">加速/沉默</div>
-                    </div>
-                    <i class="fas fa-chevron-right text-gray-600"></i>
-                    <div class="text-center">
-                        <div class="skill-key mx-auto mb-2 text-xl"><i class="fas fa-shield-virus"></i></div>
-                        <div class="text-gold font-bold text-2xl">W</div>
-                        <div class="text-xs text-gray-400 mt-1">最後</div>
-                        <div class="text-[10px] text-gray-500">減傷/韌性</div>
-                    </div>
-                </div>
-                <div class="mt-6 pt-4 border-t border-gray-700 text-sm text-gray-400">
-                    <i class="fas fa-info-circle text-gold mr-1"></i> 
-                    <strong>S15 重點：</strong> E 技能吃攻速與暴擊係數，是暴擊流的核心。
-                </div>
-            </div>
-
-            <div class="bg-[#1e2328]/90 backdrop-blur border border-gray-700 p-6 rounded-lg shadow-xl flex flex-col justify-center items-center text-center">
-                <h3 class="text-lg font-bold text-gray-300 mb-2">勝率趨勢</h3>
-                <div class="text-5xl font-bold text-green-400 mb-1">52.4%</div>
-                <div class="text-sm text-gray-500">Emerald+ Rank</div>
-                <div class="mt-4 px-3 py-1 bg-green-900/30 text-green-400 text-xs rounded border border-green-800">
-                    S Tier 上路霸主
-                </div>
-            </div>
-        </section>
-
         <!-- Runes Section -->
         <section id="runes">
             <div class="flex items-center gap-4 mb-8">
-                <div class="h-1 w-12 bg-gold"></div>
-                <h2 class="text-3xl font-bold text-white">符文配置</h2>
+                <div class="h-1 w-12 bg-green-500"></div>
+                <h2 class="text-3xl font-bold text-white">符文配置：不滅之握</h2>
             </div>
             
             <div class="grid md:grid-cols-2 gap-8">
-                <!-- Phase Rush -->
-                <div class="bg-[#0a1428] border border-blue-900/50 p-6 rounded-xl card-hover relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">90% 首選</div>
+                <!-- Grasp of the Undying -->
+                <div class="bg-[#1e293b] border border-green-900/50 p-6 rounded-xl card-hover relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 bg-green-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">坦克首選</div>
                     <div class="flex items-start gap-4 mb-6">
-                        <div class="w-16 h-16 rounded-full bg-blue-900/50 border-2 border-blue-400 flex items-center justify-center text-blue-300 text-3xl">
-                            <i class="fas fa-wind"></i>
+                        <div class="w-16 h-16 rounded-full bg-green-900/50 border-2 border-green-400 flex items-center justify-center text-green-300 text-3xl">
+                            <i class="fas fa-hand-holding-heart"></i>
                         </div>
                         <div>
-                            <h3 class="text-2xl font-bold text-blue-100">相位衝擊 (Phase Rush)</h3>
-                            <p class="text-blue-300/80 text-sm mt-1">打帶跑戰術核心，高容錯率</p>
+                            <h3 class="text-2xl font-bold text-green-100">不滅之握 (Grasp)</h3>
+                            <p class="text-green-300/80 text-sm mt-1">普攻偷取生命上限，越打越坦</p>
                         </div>
                     </div>
                     
                     <div class="space-y-4">
                         <div class="flex items-center gap-3 text-gray-300">
-                            <span class="w-8 h-8 rounded bg-blue-900/30 flex items-center justify-center text-xs border border-blue-800">主</span>
-                            <span>靈光披風 • 迅捷 • 風暴凝聚</span>
+                            <span class="w-8 h-8 rounded bg-green-900/30 flex items-center justify-center text-xs border border-green-800">主</span>
+                            <div class="flex flex-col">
+                                <span class="font-bold text-white">堅決系</span>
+                                <span class="text-sm text-gray-400">爆破 • 骨甲/回春 • 過度生長</span>
+                            </div>
                         </div>
                         <div class="flex items-center gap-3 text-gray-300">
                             <span class="w-8 h-8 rounded bg-yellow-900/30 flex items-center justify-center text-xs border border-yellow-800">副</span>
-                            <span>凱旋 • 傳奇:加速</span>
+                            <div class="flex flex-col">
+                                <span class="font-bold text-white">精準系</span>
+                                <span class="text-sm text-gray-400">凱旋 • 傳奇:韌性</span>
+                            </div>
                         </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-700 text-sm text-gray-400">
+                        <i class="fas fa-lightbulb text-yellow-500 mr-1"></i> 
+                        <strong>核心思路：</strong> 對線期每 4 秒就上去 A 一下對手，不僅回血還能永久增加血量。
                     </div>
                 </div>
 
-                <!-- Conqueror -->
-                <div class="bg-[#0a1428] border border-yellow-900/50 p-6 rounded-xl card-hover group">
+                <!-- Secondary Option -->
+                <div class="bg-[#1e293b] border border-gray-700 p-6 rounded-xl card-hover group opacity-75 hover:opacity-100 transition">
                     <div class="flex items-start gap-4 mb-6">
-                        <div class="w-16 h-16 rounded-full bg-yellow-900/50 border-2 border-yellow-600 flex items-center justify-center text-yellow-500 text-3xl">
+                        <div class="w-16 h-16 rounded-full bg-yellow-900/30 border-2 border-yellow-600 flex items-center justify-center text-yellow-500 text-3xl">
                             <i class="fas fa-fist-raised"></i>
                         </div>
                         <div>
                             <h3 class="text-2xl font-bold text-yellow-100">征服者 (Conqueror)</h3>
-                            <p class="text-yellow-500/80 text-sm mt-1">對抗純坦克/站樁對拼</p>
+                            <p class="text-yellow-500/80 text-sm mt-1">持續作戰型坦克</p>
                         </div>
                     </div>
-                    
-                    <div class="space-y-4">
-                        <div class="flex items-center gap-3 text-gray-300">
-                            <span class="w-8 h-8 rounded bg-yellow-900/30 flex items-center justify-center text-xs border border-yellow-800">主</span>
-                            <span>凱旋 • 傳奇:加速 • 堅毅不倒</span>
-                        </div>
-                        <div class="flex items-center gap-3 text-gray-300">
-                            <span class="w-8 h-8 rounded bg-green-900/30 flex items-center justify-center text-xs border border-green-800">副</span>
-                            <span>爆破 • 甦醒/骨甲</span>
-                        </div>
-                    </div>
+                    <p class="text-gray-400 text-sm mb-4">
+                        如果你對線的是另一個超級坦克（如賽恩、奧恩），征服者能提供持續作戰的回血能力。
+                        <br><br>
+                        出裝依然走坦克路線，但符文提供額外的吸血與攻擊力。
+                    </p>
                 </div>
             </div>
         </section>
@@ -243,76 +197,76 @@
         <!-- Items Section -->
         <section id="items">
             <div class="flex items-center gap-4 mb-8">
-                <div class="h-1 w-12 bg-gold"></div>
-                <h2 class="text-3xl font-bold text-white">核心出裝</h2>
+                <div class="h-1 w-12 bg-green-500"></div>
+                <h2 class="text-3xl font-bold text-white">坦克出裝</h2>
             </div>
 
             <!-- Build Path -->
-            <div class="bg-[#1e2328] border border-gold/30 rounded-xl p-8 shadow-2xl relative">
-                <div class="absolute -top-3 left-8 bg-gold text-[#0a1428] font-bold px-4 py-1 text-sm rounded">S15 暴擊流標準順序</div>
+            <div class="bg-[#1e293b] border border-green-500/30 rounded-xl p-8 shadow-2xl relative">
+                <div class="absolute -top-3 left-8 bg-green-600 text-white font-bold px-4 py-1 text-sm rounded">又坦又痛的出裝順序</div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-8 items-center mt-4">
                     <!-- Item 1 -->
                     <div class="text-center group">
-                        <div class="w-20 h-20 mx-auto bg-[#0a1428] border-2 border-gold rounded-lg mb-3 flex items-center justify-center text-4xl text-purple-400 group-hover:scale-110 transition duration-300 shadow-[0_0_15px_rgba(200,170,110,0.2)]">
+                        <div class="w-20 h-20 mx-auto bg-[#0f172a] border-2 border-purple-400 rounded-lg mb-3 flex items-center justify-center text-4xl text-purple-400 group-hover:scale-110 transition duration-300">
                             <i class="fas fa-gavel"></i>
                         </div>
-                        <h4 class="text-gold font-bold">挺進破壞者</h4>
-                        <p class="text-xs text-gray-400 mt-1">必備核心<br>主動緩速+清兵</p>
+                        <h4 class="text-purple-300 font-bold">挺進破壞者</h4>
+                        <p class="text-xs text-gray-400 mt-1">唯一攻擊裝<br>清兵+緩速</p>
                     </div>
                     
                     <i class="fas fa-arrow-right text-gray-600 hidden md:block text-center text-xl"></i>
 
                     <!-- Item 2 -->
                     <div class="text-center group">
-                        <div class="w-20 h-20 mx-auto bg-[#0a1428] border-2 border-blue-400 rounded-lg mb-3 flex items-center justify-center text-4xl text-blue-200 group-hover:scale-110 transition duration-300">
+                        <div class="w-20 h-20 mx-auto bg-[#0f172a] border-2 border-white rounded-lg mb-3 flex items-center justify-center text-4xl text-gray-300 group-hover:scale-110 transition duration-300">
                             <i class="fas fa-shoe-prints"></i>
                         </div>
-                        <h4 class="text-blue-200 font-bold">狂戰士護脛</h4>
-                        <p class="text-xs text-gray-400 mt-1">攻速鞋<br>增加 E 轉速</p>
+                        <h4 class="text-white font-bold">鐵板/水星鞋</h4>
+                        <p class="text-xs text-gray-400 mt-1">看對手陣容<br>物防或韌性</p>
                     </div>
 
                     <i class="fas fa-arrow-right text-gray-600 hidden md:block text-center text-xl"></i>
 
                     <!-- Item 3 -->
                     <div class="text-center group">
-                        <div class="w-20 h-20 mx-auto bg-[#0a1428] border-2 border-green-400 rounded-lg mb-3 flex items-center justify-center text-4xl text-green-300 group-hover:scale-110 transition duration-300">
-                            <i class="fas fa-ghost"></i>
+                        <div class="w-20 h-20 mx-auto bg-[#0f172a] border-2 border-orange-500 rounded-lg mb-3 flex items-center justify-center text-4xl text-orange-500 group-hover:scale-110 transition duration-300">
+                            <i class="fas fa-shield-alt"></i>
                         </div>
-                        <h4 class="text-green-300 font-bold">幻影之舞</h4>
-                        <p class="text-xs text-gray-400 mt-1">穿透單位<br>高跑速+暴擊</p>
+                        <h4 class="text-orange-400 font-bold">亡者板甲</h4>
+                        <p class="text-xs text-gray-400 mt-1">跑速核心<br>防禦+機動性</p>
                     </div>
                     
                     <i class="fas fa-arrow-right text-gray-600 hidden md:block text-center text-xl"></i>
 
                     <!-- Item 4 -->
                     <div class="text-center group">
-                        <div class="w-20 h-20 mx-auto bg-[#0a1428] border-2 border-red-500 rounded-lg mb-3 flex items-center justify-center text-4xl text-red-500 group-hover:scale-110 transition duration-300 shadow-[0_0_15px_rgba(220,38,38,0.3)]">
-                            <i class="fas fa-infinity"></i>
+                        <div class="w-20 h-20 mx-auto bg-[#0f172a] border-2 border-green-500 rounded-lg mb-3 flex items-center justify-center text-4xl text-green-500 group-hover:scale-110 transition duration-300 shadow-[0_0_15px_rgba(34,197,94,0.3)]">
+                            <i class="fas fa-biohazard"></i>
                         </div>
-                        <h4 class="text-red-400 font-bold">無盡之刃</h4>
-                        <p class="text-xs text-gray-400 mt-1">傷害質變<br>一套秒殺軟皮</p>
+                        <h4 class="text-green-400 font-bold">加克秀</h4>
+                        <p class="text-xs text-gray-400 mt-1">雙防神器<br>越打越硬</p>
                     </div>
                 </div>
             </div>
 
             <!-- Situational Items -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                <div class="bg-[#1e2328] p-4 rounded border border-gray-700 hover:border-gold/50 transition">
-                    <h5 class="text-sm text-red-400 font-bold mb-1">致死宣告</h5>
-                    <p class="text-xs text-gray-500">重創/破甲</p>
+                <div class="bg-[#1e293b] p-4 rounded border border-gray-700 hover:border-green-500/50 transition">
+                    <h5 class="text-sm text-red-400 font-bold mb-1">荊棘之甲 (反甲)</h5>
+                    <p class="text-xs text-gray-500">打普攻角/回血角必出</p>
                 </div>
-                <div class="bg-[#1e2328] p-4 rounded border border-gray-700 hover:border-gold/50 transition">
-                    <h5 class="text-sm text-orange-400 font-bold mb-1">亡者板甲</h5>
-                    <p class="text-xs text-gray-500">跑速/抓人</p>
-                </div>
-                <div class="bg-[#1e2328] p-4 rounded border border-gray-700 hover:border-gold/50 transition">
-                    <h5 class="text-sm text-purple-400 font-bold mb-1">史特拉克手套</h5>
-                    <p class="text-xs text-gray-500">防爆發/護盾</p>
-                </div>
-                <div class="bg-[#1e2328] p-4 rounded border border-gray-700 hover:border-gold/50 transition">
+                <div class="bg-[#1e293b] p-4 rounded border border-gray-700 hover:border-green-500/50 transition">
                     <h5 class="text-sm text-green-400 font-bold mb-1">自然之力</h5>
-                    <p class="text-xs text-gray-500">對抗多AP</p>
+                    <p class="text-xs text-gray-500">對面法師多時出</p>
+                </div>
+                <div class="bg-[#1e293b] p-4 rounded border border-gray-700 hover:border-green-500/50 transition">
+                    <h5 class="text-sm text-purple-400 font-bold mb-1">史特拉克手套</h5>
+                    <p class="text-xs text-gray-500">防止被瞬間秒殺</p>
+                </div>
+                <div class="bg-[#1e293b] p-4 rounded border border-gray-700 hover:border-green-500/50 transition">
+                    <h5 class="text-sm text-orange-400 font-bold mb-1">蘭頓之兆</h5>
+                    <p class="text-xs text-gray-500">對抗暴擊流射手</p>
                 </div>
             </div>
         </section>
@@ -321,79 +275,83 @@
         <section id="gameplay" class="grid md:grid-cols-2 gap-8">
             <div>
                 <div class="flex items-center gap-4 mb-6">
-                    <div class="h-1 w-12 bg-gold"></div>
-                    <h2 class="text-3xl font-bold text-white">實戰技巧</h2>
+                    <div class="h-1 w-12 bg-green-500"></div>
+                    <h2 class="text-3xl font-bold text-white">實戰技巧 (不陰人版)</h2>
                 </div>
                 <div class="space-y-4">
-                    <div class="bg-[#1e2328] p-5 rounded-lg border-l-4 border-blue-500">
-                        <h4 class="font-bold text-white mb-2">⚡ 相位衝擊連招</h4>
-                        <p class="text-gray-400 text-sm">普攻 <i class="fas fa-arrow-right text-xs mx-1"></i> Q <i class="fas fa-arrow-right text-xs mx-1"></i> E (轉兩圈) <i class="fas fa-arrow-right text-xs mx-1"></i> 觸發相位跑掉。這是最無賴的換血方式。</p>
+                    <div class="bg-[#1e293b] p-5 rounded-lg border-l-4 border-green-500">
+                        <h4 class="font-bold text-white mb-2">🛡️ 賴線發育 (W技能)</h4>
+                        <p class="text-gray-400 text-sm">
+                            坦克流不用急著殺人。利用被動回血，沒血就退到塔下發呆 10 秒。
+                            <br>W 技能被動疊滿後提供大量雙防，這是你比別人硬的資本，記得多補兵。
+                        </p>
                     </div>
-                    <div class="bg-[#1e2328] p-5 rounded-lg border-l-4 border-red-500">
-                        <h4 class="font-bold text-white mb-2">🗡️ 草叢陰人 (One-Shot)</h4>
-                        <p class="text-gray-400 text-sm">Q (沉默) <i class="fas fa-arrow-right text-xs mx-1"></i> 挺進 (緩速) <i class="fas fa-arrow-right text-xs mx-1"></i> E (跟著轉) <i class="fas fa-arrow-right text-xs mx-1"></i> R (斬殺)。配合暴擊裝備，脆皮英雄沒有反應時間。</p>
+                    <div class="bg-[#1e293b] p-5 rounded-lg border-l-4 border-blue-500">
+                        <h4 class="font-bold text-white mb-2">⚔️ 團戰定位：門神</h4>
+                        <p class="text-gray-400 text-sm">
+                            不要繞後！站在自家射手/法師前面。
+                            <br>對面刺客衝進來 -> <strong>Q 沉默他</strong> -> <strong>E 轉他在他臉上</strong>。
+                            <br>只要你活著，隊友就能輸出。
+                        </p>
                     </div>
-                    <div class="bg-[#1e2328] p-5 rounded-lg border-l-4 border-gold">
-                        <h4 class="font-bold text-white mb-2">🛡️ W 的使用藝術</h4>
-                        <p class="text-gray-400 text-sm">W 開啟的前 0.75 秒有高額護盾與韌性。務必在對手丟出最強控制技（如雷玟暈眩、諾手拉人）的瞬間開啟。</p>
+                    <div class="bg-[#1e293b] p-5 rounded-lg border-l-4 border-purple-500">
+                        <h4 class="font-bold text-white mb-2">💥 大招斬殺前排</h4>
+                        <p class="text-gray-400 text-sm">
+                            因為你不出暴擊，秒軟皮比較難。
+                            <br>建議把 R 留給對面的坦克或戰士，利用真實傷害幫助隊友快速解決對方的前排。
+                        </p>
                     </div>
                 </div>
             </div>
 
-            <!-- Counters -->
-            <div class="bg-[#0a1428] border border-red-900/30 p-6 rounded-xl">
-                <h3 class="text-xl font-bold text-red-400 mb-6 flex items-center gap-2">
-                    <i class="fas fa-exclamation-triangle"></i> 危險對局
+            <!-- Stats/Counters -->
+            <div class="bg-[#0f172a] border border-gray-700 p-6 rounded-xl">
+                <h3 class="text-xl font-bold text-gray-300 mb-6 flex items-center gap-2">
+                    <i class="fas fa-chess-rook"></i> 坦克流對線心法
                 </h3>
-                <div class="space-y-4">
-                    <div class="flex items-center gap-4 p-3 hover:bg-red-900/10 rounded transition">
-                        <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center font-bold text-white">C</div>
+                <ul class="space-y-4 text-gray-400 text-sm">
+                    <li class="flex gap-3">
+                        <i class="fas fa-check text-green-500 mt-1"></i>
                         <div>
-                            <div class="font-bold text-white">卡蜜兒 (Camille)</div>
-                            <div class="text-xs text-gray-500">護盾與真實傷害完剋。應對：主W，騙護盾。</div>
+                            <strong>不滅之握怎麼用？</strong>
+                            <br>進入戰鬥狀態 4 秒後普攻會發光。看到發光就上去敲對面一下，敲完就走，不要貪。
                         </div>
-                    </div>
-                    <div class="flex items-center gap-4 p-3 hover:bg-red-900/10 rounded transition">
-                        <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center font-bold text-white">K</div>
+                    </li>
+                    <li class="flex gap-3">
+                        <i class="fas fa-check text-green-500 mt-1"></i>
                         <div>
-                            <div class="font-bold text-white">凱爾 (Kayle)</div>
-                            <div class="text-xs text-gray-500">遠程風箏惡夢。應對：相位衝擊，Call打野。</div>
+                            <strong>被風箏怎麼辦？</strong>
+                            <br>坦裝蓋倫腿比較短。如果追不到人，就回頭保隊友，不要被對面拉著跑。亡者板甲+自然之力會是你後期追人的資本。
                         </div>
-                    </div>
-                    <div class="flex items-center gap-4 p-3 hover:bg-red-900/10 rounded transition">
-                        <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center font-bold text-white">V</div>
+                    </li>
+                    <li class="flex gap-3">
+                        <i class="fas fa-check text-green-500 mt-1"></i>
                         <div>
-                            <div class="font-bold text-white">汎 (Vayne)</div>
-                            <div class="text-xs text-gray-500">上路最大的敵人。應對：帶掃透鏡，布甲鞋，抗壓。</div>
+                            <strong>什麼時候出反甲？</strong>
+                            <br>打劍姬 (Fiora)、亞托克斯 (Aatrox)、華威 (Warwick) 這種回血怪，第一件出個 800 元的小反甲 (棘刺背心) 有奇效。
                         </div>
-                    </div>
-                </div>
+                    </li>
+                </ul>
             </div>
         </section>
 
     </main>
 
     <!-- Footer -->
-    <footer class="bg-[#050a14] border-t border-[#1e2328] py-12 mt-auto">
+    <footer class="bg-[#0f172a] border-t border-gray-800 py-12 mt-auto">
         <div class="container mx-auto px-4 text-center">
-            <h2 class="text-2xl font-bold text-gold mb-4">DEMACIA</h2>
+            <h2 class="text-2xl font-bold text-green-500 mb-4">DEMACIA</h2>
             <p class="text-gray-600 text-sm max-w-md mx-auto">
-                此攻略基於 S15 版本 Meta 製作。<br>
-                "恐懼是萬惡之首。" - 蓋倫
+                "正義，由我親手締造。" - 蓋倫
             </p>
-            <div class="mt-8 flex justify-center gap-6 text-gray-500">
-                <a href="#" class="hover:text-gold transition"><i class="fab fa-github"></i></a>
-                <a href="#" class="hover:text-gold transition"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="hover:text-gold transition"><i class="fab fa-discord"></i></a>
-            </div>
             <p class="text-xs text-gray-800 mt-8">
-                &copy; 2025 League Guide. Not affiliated with Riot Games.
+                &copy; 2025 League Guide.
             </p>
         </div>
     </footer>
 
     <script>
-        // Smooth scroll for anchor links
+        // Smooth scroll
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -403,7 +361,7 @@
             });
         });
 
-        // Add scroll animation for cards
+        // Animation
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
