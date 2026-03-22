@@ -1,292 +1,354 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Copy, Check, Settings2, Wrench } from 'lucide-react';
-
-export default function App() {
-  // 初始預設資料，符合你的範例
-  const [requiredItems, setRequiredItems] = useState([
-    { id: 'r1', text: '必選1', checked: true },
-    { id: 'r2', text: '必選2', checked: true },
-  ]);
-
-  const [situationalItems, setSituationalItems] = useState([
-    { id: 's1', text: '情境選1', checked: true },
-    { id: 's2', text: '情境選2', checked: true },
-  ]);
-
-  const [newRequired, setNewRequired] = useState('');
-  const [newSituational, setNewSituational] = useState('');
-  const [results, setResults] = useState([]);
-  const [copied, setCopied] = useState(false);
-
-  // 處理勾選狀態切換
-  const toggleItem = (type, id) => {
-    if (type === 'required') {
-      setRequiredItems(items =>
-        items.map(item => (item.id === id ? { ...item, checked: !item.checked } : item))
-      );
-    } else {
-      setSituationalItems(items =>
-        items.map(item => (item.id === id ? { ...item, checked: !item.checked } : item))
-      );
-    }
-  };
-
-  // 處理新增項目
-  const addItem = (type, e) => {
-    e.preventDefault();
-    if (type === 'required' && newRequired.trim()) {
-      setRequiredItems([
-        ...requiredItems,
-        { id: Date.now().toString(), text: newRequired.trim(), checked: true },
-      ]);
-      setNewRequired('');
-    } else if (type === 'situational' && newSituational.trim()) {
-      setSituationalItems([
-        ...situationalItems,
-        { id: Date.now().toString(), text: newSituational.trim(), checked: true },
-      ]);
-      setNewSituational('');
-    }
-  };
-
-  // 處理刪除項目
-  const deleteItem = (type, id) => {
-    if (type === 'required') {
-      setRequiredItems(items => items.filter(item => item.id !== id));
-    } else {
-      setSituationalItems(items => items.filter(item => item.id !== id));
-    }
-  };
-
-  // 產生所有可能的子集合 (Power Set) 演算法，並保持原始順序
-  const getSubsets = (array) => {
-    const result = [];
-    const f = (prefix, arr) => {
-      result.push(prefix);
-      for (let i = 0; i < arr.length; i++) {
-        f([...prefix, arr[i]], arr.slice(i + 1));
-      }
-    };
-    f([], array);
-    // 依照長度排序，讓少項目的排前面 (符合範例格式)
-    return result.sort((a, b) => a.length - b.length);
-  };
-
-  // 產生最終的排列組合
-  const generateCombinations = () => {
-    const reqSelected = requiredItems.filter(item => item.checked).map(item => item.text);
-    const sitSelected = situationalItems.filter(item => item.checked).map(item => item.text);
-
-    if (reqSelected.length === 0 && sitSelected.length === 0) {
-      setResults([]);
-      return;
-    }
-
-    const situationalSubsets = getSubsets(sitSelected);
-
-    const combinedResults = situationalSubsets.map(subset => {
-      const fullCombo = [...reqSelected, ...subset];
-      return fullCombo.join(' + ');
-    }).filter(str => str.length > 0); // 過濾掉完全空白的組合
-
-    setResults(combinedResults);
-    setCopied(false);
-  };
-
-  // 複製到剪貼簿
-  const copyToClipboard = () => {
-    const textToCopy = results.join('\n');
-    // 使用 fallback 方案確保在各種環境下都能複製
-    const textArea = document.createElement("textarea");
-    textArea.value = textToCopy;
-    document.body.appendChild(textArea);
-    textArea.select();
-    try {
-      document.execCommand('copy');
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy', err);
-    }
-    document.body.removeChild(textArea);
-  };
-
-  // 初始載入時自動產生一次結果
-  useEffect(() => {
-    generateCombinations();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-8 font-sans text-slate-800">
-      <div className="max-w-5xl mx-auto space-y-6">
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>維修料排列組合產生器</title>
+    <!-- 引入 Tailwind CSS 進行樣式渲染 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 自訂卷軸樣式 */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-50 p-4 md:p-8 font-sans text-slate-800">
+    <div class="max-w-5xl mx-auto space-y-6">
         
-        {/* 標題區 */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex items-center space-x-4">
-          <div className="bg-blue-100 p-3 rounded-xl text-blue-600">
-            <Wrench size={28} />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-slate-800">維修料排列組合產生器</h1>
-            <p className="text-slate-500 text-sm mt-1">勾選必選與情境項目，快速展開所有可能的用料組合。</p>
-          </div>
+        <!-- 標題區 -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex items-center space-x-4">
+            <div class="bg-blue-100 p-3 rounded-xl text-blue-600">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold text-slate-800">維修料排列組合產生器</h1>
+                <p class="text-slate-500 text-sm mt-1">勾選必選與情境項目，快速展開所有可能的用料組合。</p>
+            </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* 左側：必選項目 */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col h-full">
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-2 h-6 bg-red-400 rounded-full"></div>
-              <h2 className="text-lg font-semibold">必選項目</h2>
-            </div>
-            
-            <form onSubmit={(e) => addItem('required', e)} className="flex mb-4 gap-2">
-              <input
-                type="text"
-                value={newRequired}
-                onChange={(e) => setNewRequired(e.target.value)}
-                placeholder="輸入必選料號/名稱..."
-                className="flex-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent transition-all"
-              />
-              <button
-                type="submit"
-                disabled={!newRequired.trim()}
-                className="bg-slate-800 hover:bg-slate-700 disabled:bg-slate-300 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center"
-              >
-                <Plus size={20} />
-              </button>
-            </form>
-
-            <div className="flex-1 overflow-y-auto max-h-64 pr-2 space-y-2">
-              {requiredItems.length === 0 ? (
-                <p className="text-slate-400 text-center py-4 text-sm">尚未加入任何必選項目</p>
-              ) : (
-                requiredItems.map(item => (
-                  <div key={item.id} className={`flex items-center justify-between p-3 rounded-lg border transition-all ${item.checked ? 'border-red-200 bg-red-50/50' : 'border-slate-100 bg-slate-50'}`}>
-                    <label className="flex items-center space-x-3 cursor-pointer flex-1">
-                      <input
-                        type="checkbox"
-                        checked={item.checked}
-                        onChange={() => toggleItem('required', item.id)}
-                        className="w-5 h-5 rounded border-slate-300 text-red-500 focus:ring-red-400 cursor-pointer accent-red-500"
-                      />
-                      <span className={`${item.checked ? 'text-slate-800 font-medium' : 'text-slate-500'}`}>
-                        {item.text}
-                      </span>
-                    </label>
-                    <button onClick={() => deleteItem('required', item.id)} className="text-slate-400 hover:text-red-500 p-1 transition-colors">
-                      <Trash2 size={18} />
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- 左側：必選項目 -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col h-full">
+                <div class="flex items-center space-x-2 mb-4">
+                    <div class="w-2 h-6 bg-red-400 rounded-full"></div>
+                    <h2 class="text-lg font-semibold">必選項目</h2>
+                </div>
+                
+                <form id="req-form" class="flex mb-4 gap-2">
+                    <input type="text" id="req-input" placeholder="輸入必選料號/名稱..." class="flex-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent transition-all">
+                    <button type="submit" id="req-submit" disabled class="bg-slate-800 hover:bg-slate-700 disabled:bg-slate-300 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                     </button>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
+                </form>
 
-          {/* 右側：情境項目 */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col h-full">
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-2 h-6 bg-blue-400 rounded-full"></div>
-              <h2 className="text-lg font-semibold">情境項目</h2>
+                <div id="req-list" class="flex-1 overflow-y-auto max-h-64 pr-2 space-y-2">
+                    <!-- 動態產生必選項目 -->
+                </div>
             </div>
-            
-            <form onSubmit={(e) => addItem('situational', e)} className="flex mb-4 gap-2">
-              <input
-                type="text"
-                value={newSituational}
-                onChange={(e) => setNewSituational(e.target.value)}
-                placeholder="輸入情境料號/名稱..."
-                className="flex-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
-              />
-              <button
-                type="submit"
-                disabled={!newSituational.trim()}
-                className="bg-slate-800 hover:bg-slate-700 disabled:bg-slate-300 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center"
-              >
-                <Plus size={20} />
-              </button>
-            </form>
 
-            <div className="flex-1 overflow-y-auto max-h-64 pr-2 space-y-2">
-              {situationalItems.length === 0 ? (
-                <p className="text-slate-400 text-center py-4 text-sm">尚未加入任何情境項目</p>
-              ) : (
-                situationalItems.map(item => (
-                  <div key={item.id} className={`flex items-center justify-between p-3 rounded-lg border transition-all ${item.checked ? 'border-blue-200 bg-blue-50/50' : 'border-slate-100 bg-slate-50'}`}>
-                    <label className="flex items-center space-x-3 cursor-pointer flex-1">
-                      <input
-                        type="checkbox"
-                        checked={item.checked}
-                        onChange={() => toggleItem('situational', item.id)}
-                        className="w-5 h-5 rounded border-slate-300 text-blue-500 focus:ring-blue-400 cursor-pointer accent-blue-500"
-                      />
-                      <span className={`${item.checked ? 'text-slate-800 font-medium' : 'text-slate-500'}`}>
-                        {item.text}
-                      </span>
-                    </label>
-                    <button onClick={() => deleteItem('situational', item.id)} className="text-slate-400 hover:text-red-500 p-1 transition-colors">
-                      <Trash2 size={18} />
+            <!-- 右側：情境項目 -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col h-full">
+                <div class="flex items-center space-x-2 mb-4">
+                    <div class="w-2 h-6 bg-blue-400 rounded-full"></div>
+                    <h2 class="text-lg font-semibold">情境項目</h2>
+                </div>
+                
+                <form id="sit-form" class="flex mb-4 gap-2">
+                    <input type="text" id="sit-input" placeholder="輸入情境料號/名稱..." class="flex-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all">
+                    <button type="submit" id="sit-submit" disabled class="bg-slate-800 hover:bg-slate-700 disabled:bg-slate-300 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                     </button>
-                  </div>
-                ))
-              )}
+                </form>
+
+                <div id="sit-list" class="flex-1 overflow-y-auto max-h-64 pr-2 space-y-2">
+                    <!-- 動態產生情境項目 -->
+                </div>
             </div>
-          </div>
         </div>
 
-        {/* 執行按鈕 */}
-        <div className="flex justify-center py-2">
-          <button
-            onClick={generateCombinations}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg shadow-blue-200 hover:shadow-blue-300 transition-all transform hover:-translate-y-0.5 flex items-center space-x-2"
-          >
-            <Settings2 size={24} />
-            <span>一鍵產生排列組合</span>
-          </button>
-        </div>
-
-        {/* 結果顯示區 */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-          <div className="bg-slate-50 border-b border-slate-200 p-4 px-6 flex items-center justify-between">
-            <h2 className="text-lg font-semibold flex items-center space-x-2">
-              <span>產生結果</span>
-              <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded-full">
-                共 {results.length} 種組合
-              </span>
-            </h2>
-            <button
-              onClick={copyToClipboard}
-              disabled={results.length === 0}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                copied 
-                  ? 'bg-emerald-100 text-emerald-700' 
-                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
-            >
-              {copied ? <Check size={16} /> : <Copy size={16} />}
-              <span>{copied ? '已複製！' : '複製全部'}</span>
+        <!-- 執行按鈕 -->
+        <div class="flex justify-center py-2">
+            <button id="generate-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg shadow-blue-200 hover:shadow-blue-300 transition-all transform hover:-translate-y-0.5 flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="7" r="3"/><circle cx="7" cy="17" r="3"/></svg>
+                <span>一鍵產生排列組合</span>
             </button>
-          </div>
-          
-          <div className="p-6 bg-slate-800 text-slate-50 font-mono text-sm sm:text-base leading-relaxed overflow-x-auto min-h-[150px]">
-            {results.length > 0 ? (
-              <ul className="space-y-2">
-                {results.map((res, index) => (
-                  <li key={index} className="flex">
-                    <span className="text-slate-500 mr-4 select-none">{String(index + 1).padStart(2, '0')}.</span>
-                    <span className="text-emerald-300">{res}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div className="flex h-full items-center justify-center text-slate-500 py-8">
-                請先勾選上方的項目，然後點擊「產生」按鈕
-              </div>
-            )}
-          </div>
         </div>
 
-      </div>
+        <!-- 結果顯示區 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="bg-slate-50 border-b border-slate-200 p-4 px-6 flex items-center justify-between">
+                <h2 class="text-lg font-semibold flex items-center space-x-2">
+                    <span>產生結果</span>
+                    <span id="results-count" class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded-full">
+                        共 0 種組合
+                    </span>
+                </h2>
+                <button id="copy-btn" disabled class="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span id="copy-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                    </span>
+                    <span id="copy-text">複製全部</span>
+                </button>
+            </div>
+            
+            <div id="results-container" class="p-6 bg-slate-800 text-slate-50 font-mono text-sm sm:text-base leading-relaxed overflow-x-auto min-h-[150px]">
+                <!-- 動態產生結果 -->
+                <div class="flex h-full items-center justify-center text-slate-500 py-8">
+                    請先勾選上方的項目，然後點擊「產生」按鈕
+                </div>
+            </div>
+        </div>
+
     </div>
-  );
-}
+
+    <!-- JavaScript 邏輯 -->
+    <script>
+        // --- 狀態管理 ---
+        let requiredItems = [
+            { id: 'r1', text: '必選1', checked: true },
+            { id: 'r2', text: '必選2', checked: true },
+        ];
+        let situationalItems = [
+            { id: 's1', text: '情境選1', checked: true },
+            { id: 's2', text: '情境選2', checked: true },
+        ];
+        let results = [];
+
+        // --- DOM 元素綁定 ---
+        const reqList = document.getElementById('req-list');
+        const sitList = document.getElementById('sit-list');
+        const reqForm = document.getElementById('req-form');
+        const sitForm = document.getElementById('sit-form');
+        const reqInput = document.getElementById('req-input');
+        const sitInput = document.getElementById('sit-input');
+        const reqSubmit = document.getElementById('req-submit');
+        const sitSubmit = document.getElementById('sit-submit');
+        const generateBtn = document.getElementById('generate-btn');
+        const resultsContainer = document.getElementById('results-container');
+        const resultsCount = document.getElementById('results-count');
+        const copyBtn = document.getElementById('copy-btn');
+        const copyIcon = document.getElementById('copy-icon');
+        const copyText = document.getElementById('copy-text');
+
+        // SVG 圖示
+        const trashIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>`;
+        const copySVG = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`;
+        const checkSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+
+        // --- 渲染畫面 ---
+        function renderItems(items, container, type) {
+            container.innerHTML = '';
+            if (items.length === 0) {
+                const emptyMsg = document.createElement('p');
+                emptyMsg.className = "text-slate-400 text-center py-4 text-sm";
+                emptyMsg.textContent = `尚未加入任何${type === 'required' ? '必選' : '情境'}項目`;
+                container.appendChild(emptyMsg);
+                return;
+            }
+
+            items.forEach(item => {
+                const div = document.createElement('div');
+                const isReq = type === 'required';
+                const borderColor = item.checked ? (isReq ? 'border-red-200' : 'border-blue-200') : 'border-slate-100';
+                const bgColor = item.checked ? (isReq ? 'bg-red-50/50' : 'bg-blue-50/50') : 'bg-slate-50';
+                const textColor = item.checked ? 'text-slate-800 font-medium' : 'text-slate-500';
+                const accentColor = isReq ? 'accent-red-500 text-red-500 focus:ring-red-400' : 'accent-blue-500 text-blue-500 focus:ring-blue-400';
+
+                div.className = `flex items-center justify-between p-3 rounded-lg border transition-all ${borderColor} ${bgColor}`;
+                
+                div.innerHTML = `
+                    <label class="flex items-center space-x-3 cursor-pointer flex-1">
+                        <input type="checkbox" data-id="${item.id}" data-type="${type}" ${item.checked ? 'checked' : ''} class="w-5 h-5 rounded border-slate-300 cursor-pointer ${accentColor}">
+                        <span class="${textColor}">${item.text}</span>
+                    </label>
+                    <button data-id="${item.id}" data-type="${type}" class="delete-btn text-slate-400 hover:text-red-500 p-1 transition-colors">
+                        ${trashIconSVG}
+                    </button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function renderResults() {
+            resultsCount.textContent = `共 ${results.length} 種組合`;
+            
+            if (results.length > 0) {
+                copyBtn.disabled = false;
+                let html = '<ul class="space-y-2">';
+                results.forEach((res, index) => {
+                    const num = String(index + 1).padStart(2, '0');
+                    html += `
+                        <li class="flex">
+                            <span class="text-slate-500 mr-4 select-none">${num}.</span>
+                            <span class="text-emerald-300">${res}</span>
+                        </li>
+                    `;
+                });
+                html += '</ul>';
+                resultsContainer.innerHTML = html;
+            } else {
+                copyBtn.disabled = true;
+                resultsContainer.innerHTML = `
+                    <div class="flex h-full items-center justify-center text-slate-500 py-8">
+                        請先勾選上方的項目，然後點擊「產生」按鈕
+                    </div>
+                `;
+            }
+        }
+
+        function updateAll() {
+            renderItems(requiredItems, reqList, 'required');
+            renderItems(situationalItems, sitList, 'situational');
+        }
+
+        // --- 核心邏輯 ---
+        const getSubsets = (array) => {
+            const result = [];
+            const f = (prefix, arr) => {
+                result.push(prefix);
+                for (let i = 0; i < arr.length; i++) {
+                    f([...prefix, arr[i]], arr.slice(i + 1));
+                }
+            };
+            f([], array);
+            return result.sort((a, b) => a.length - b.length);
+        };
+
+        function generateCombinations() {
+            const reqSelected = requiredItems.filter(i => i.checked).map(i => i.text);
+            const sitSelected = situationalItems.filter(i => i.checked).map(i => i.text);
+
+            if (reqSelected.length === 0 && sitSelected.length === 0) {
+                results = [];
+                renderResults();
+                return;
+            }
+
+            const situationalSubsets = getSubsets(sitSelected);
+            results = situationalSubsets.map(subset => {
+                const fullCombo = [...reqSelected, ...subset];
+                return fullCombo.join(' + ');
+            }).filter(str => str.length > 0);
+
+            renderResults();
+        }
+
+        // --- 事件綁定 ---
+        
+        // 輸入框控制按鈕狀態
+        reqInput.addEventListener('input', (e) => {
+            reqSubmit.disabled = !e.target.value.trim();
+        });
+        sitInput.addEventListener('input', (e) => {
+            sitSubmit.disabled = !e.target.value.trim();
+        });
+
+        // 新增項目
+        reqForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const val = reqInput.value.trim();
+            if (val) {
+                requiredItems.push({ id: Date.now().toString(), text: val, checked: true });
+                reqInput.value = '';
+                reqSubmit.disabled = true;
+                updateAll();
+            }
+        });
+
+        sitForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const val = sitInput.value.trim();
+            if (val) {
+                situationalItems.push({ id: Date.now().toString(), text: val, checked: true });
+                sitInput.value = '';
+                sitSubmit.disabled = true;
+                updateAll();
+            }
+        });
+
+        // 事件委派：處理勾選與刪除 (必選)
+        reqList.addEventListener('change', (e) => {
+            if (e.target.tagName === 'INPUT') {
+                const id = e.target.dataset.id;
+                requiredItems = requiredItems.map(item => item.id === id ? { ...item, checked: e.target.checked } : item);
+                updateAll();
+            }
+        });
+        reqList.addEventListener('click', (e) => {
+            const btn = e.target.closest('.delete-btn');
+            if (btn) {
+                const id = btn.dataset.id;
+                requiredItems = requiredItems.filter(item => item.id !== id);
+                updateAll();
+            }
+        });
+
+        // 事件委派：處理勾選與刪除 (情境)
+        sitList.addEventListener('change', (e) => {
+            if (e.target.tagName === 'INPUT') {
+                const id = e.target.dataset.id;
+                situationalItems = situationalItems.map(item => item.id === id ? { ...item, checked: e.target.checked } : item);
+                updateAll();
+            }
+        });
+        sitList.addEventListener('click', (e) => {
+            const btn = e.target.closest('.delete-btn');
+            if (btn) {
+                const id = btn.dataset.id;
+                situationalItems = situationalItems.filter(item => item.id !== id);
+                updateAll();
+            }
+        });
+
+        // 產生按鈕
+        generateBtn.addEventListener('click', generateCombinations);
+
+        // 複製按鈕
+        copyBtn.addEventListener('click', () => {
+            if (results.length === 0) return;
+            const textToCopy = results.join('\n');
+            const textArea = document.createElement("textarea");
+            textArea.value = textToCopy;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                // 變更按鈕狀態
+                copyBtn.classList.remove('bg-white', 'text-slate-600');
+                copyBtn.classList.add('bg-emerald-100', 'text-emerald-700');
+                copyIcon.innerHTML = checkSVG;
+                copyText.textContent = '已複製！';
+                
+                setTimeout(() => {
+                    copyBtn.classList.add('bg-white', 'text-slate-600');
+                    copyBtn.classList.remove('bg-emerald-100', 'text-emerald-700');
+                    copyIcon.innerHTML = copySVG;
+                    copyText.textContent = '複製全部';
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy', err);
+            }
+            document.body.removeChild(textArea);
+        });
+
+        // 初始化
+        updateAll();
+        generateCombinations();
+
+    </script>
+</body>
+</html>
