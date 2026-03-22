@@ -25,7 +25,7 @@
     </style>
 </head>
 <body class="min-h-screen bg-slate-50 p-4 md:p-8 font-sans text-slate-800">
-    <div class="max-w-5xl mx-auto space-y-6">
+    <div class="max-w-6xl mx-auto space-y-6">
         
         <!-- 標題區 -->
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex items-center space-x-4">
@@ -35,8 +35,28 @@
                 </svg>
             </div>
             <div>
-                <h1 class="text-2xl font-bold text-slate-800">維修料排列組合產生器</h1>
-                <p class="text-slate-500 text-sm mt-1">勾選必選與情境項目，快速展開所有可能的用料組合。</p>
+                <h1 class="text-2xl font-bold text-slate-800">維修料排列組合產生器 <span class="text-sm font-normal text-slate-500 ml-2">(Excel 專用版)</span></h1>
+                <p class="text-slate-500 text-sm mt-1">勾選項目並點擊產生，可直接將表格複製貼上至 Excel 中。</p>
+            </div>
+        </div>
+
+        <!-- 基本設定區 -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+            <h2 class="text-lg font-semibold mb-4 flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-500"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                <span>輸出格式設定</span>
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">描述前綴 (Description Prefix)</label>
+                    <input type="text" id="prefix-input" value="Replace " class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+                </div>
+                <div class="flex items-center">
+                    <label class="flex items-center space-x-3 cursor-pointer mt-5">
+                        <input type="checkbox" id="skip-checkbox" checked class="w-5 h-5 rounded border-slate-300 text-blue-500 focus:ring-blue-400 accent-blue-500 cursor-pointer">
+                        <span class="text-slate-700 font-medium select-none">結尾加上 "Skip this execution"</span>
+                    </label>
+                </div>
             </div>
         </div>
 
@@ -45,7 +65,7 @@
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col h-full">
                 <div class="flex items-center space-x-2 mb-4">
                     <div class="w-2 h-6 bg-red-400 rounded-full"></div>
-                    <h2 class="text-lg font-semibold">必選項目</h2>
+                    <h2 class="text-lg font-semibold">必選項目 <span class="text-sm font-normal text-slate-500 ml-1">(自動配發前段 Task No)</span></h2>
                 </div>
                 
                 <form id="req-form" class="flex mb-4 gap-2">
@@ -55,7 +75,7 @@
                     </button>
                 </form>
 
-                <div id="req-list" class="flex-1 overflow-y-auto max-h-64 pr-2 space-y-2">
+                <div id="req-list" class="flex-1 overflow-y-auto max-h-48 pr-2 space-y-2">
                     <!-- 動態產生必選項目 -->
                 </div>
             </div>
@@ -64,7 +84,7 @@
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col h-full">
                 <div class="flex items-center space-x-2 mb-4">
                     <div class="w-2 h-6 bg-blue-400 rounded-full"></div>
-                    <h2 class="text-lg font-semibold">情境項目</h2>
+                    <h2 class="text-lg font-semibold">情境項目 <span class="text-sm font-normal text-slate-500 ml-1">(自動配發後段 Task No)</span></h2>
                 </div>
                 
                 <form id="sit-form" class="flex mb-4 gap-2">
@@ -74,7 +94,7 @@
                     </button>
                 </form>
 
-                <div id="sit-list" class="flex-1 overflow-y-auto max-h-64 pr-2 space-y-2">
+                <div id="sit-list" class="flex-1 overflow-y-auto max-h-48 pr-2 space-y-2">
                     <!-- 動態產生情境項目 -->
                 </div>
             </div>
@@ -84,7 +104,7 @@
         <div class="flex justify-center py-2">
             <button id="generate-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg shadow-blue-200 hover:shadow-blue-300 transition-all transform hover:-translate-y-0.5 flex items-center space-x-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="7" r="3"/><circle cx="7" cy="17" r="3"/></svg>
-                <span>一鍵產生排列組合</span>
+                <span>一鍵產生表格</span>
             </button>
         </div>
 
@@ -94,22 +114,35 @@
                 <h2 class="text-lg font-semibold flex items-center space-x-2">
                     <span>產生結果</span>
                     <span id="results-count" class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded-full">
-                        共 0 種組合
+                        共 0 列資料
                     </span>
                 </h2>
-                <button id="copy-btn" disabled class="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed">
+                <button id="copy-btn" disabled class="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 hover:text-blue-800 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-white disabled:border-slate-200 disabled:text-slate-400">
                     <span id="copy-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
                     </span>
-                    <span id="copy-text">複製全部</span>
+                    <span id="copy-text" class="font-bold">一鍵複製 (可直接貼上 Excel)</span>
                 </button>
             </div>
             
-            <div id="results-container" class="p-6 bg-slate-800 text-slate-50 font-mono text-sm sm:text-base leading-relaxed overflow-x-auto min-h-[150px]">
-                <!-- 動態產生結果 -->
-                <div class="flex h-full items-center justify-center text-slate-500 py-8">
-                    請先勾選上方的項目，然後點擊「產生」按鈕
-                </div>
+            <div class="bg-white overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200 text-sm">
+                    <thead class="bg-slate-100">
+                        <tr>
+                            <th scope="col" class="px-4 py-3 text-center font-bold text-slate-700 border-x border-slate-200">ITEM</th>
+                            <th scope="col" class="px-4 py-3 text-left font-bold text-slate-700 border-r border-slate-200">DESCRIPTION</th>
+                            <th scope="col" class="px-4 py-3 text-center font-bold text-slate-700 border-r border-slate-200">RMA_TASK_NO</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-container" class="divide-y divide-slate-200 bg-white">
+                        <!-- 動態產生結果 -->
+                        <tr>
+                            <td colspan="3" class="px-6 py-8 text-center text-slate-500">
+                                請先勾選上方的項目，然後點擊「產生」按鈕
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -117,14 +150,14 @@
 
     <!-- JavaScript 邏輯 -->
     <script>
-        // --- 狀態管理 ---
+        // --- 狀態管理 (預設代入圖片中的資料) ---
         let requiredItems = [
-            { id: 'r1', text: '必選1', checked: true },
-            { id: 'r2', text: '必選2', checked: true },
+            { id: 'r1', text: 'LCD Cover(A part)', checked: true },
         ];
         let situationalItems = [
-            { id: 's1', text: '情境選1', checked: true },
-            { id: 's2', text: '情境選2', checked: true },
+            { id: 's1', text: 'LCD BEZEL', checked: true },
+            { id: 's2', text: 'HINGE', checked: true },
+            { id: 's3', text: 'LCD PANEL', checked: true },
         ];
         let results = [];
 
@@ -137,6 +170,10 @@
         const sitInput = document.getElementById('sit-input');
         const reqSubmit = document.getElementById('req-submit');
         const sitSubmit = document.getElementById('sit-submit');
+        
+        const prefixInput = document.getElementById('prefix-input');
+        const skipCheckbox = document.getElementById('skip-checkbox');
+
         const generateBtn = document.getElementById('generate-btn');
         const resultsContainer = document.getElementById('results-container');
         const resultsCount = document.getElementById('results-count');
@@ -160,7 +197,7 @@
                 return;
             }
 
-            items.forEach(item => {
+            items.forEach((item, index) => {
                 const div = document.createElement('div');
                 const isReq = type === 'required';
                 const borderColor = item.checked ? (isReq ? 'border-red-200' : 'border-blue-200') : 'border-slate-100';
@@ -184,28 +221,29 @@
         }
 
         function renderResults() {
-            resultsCount.textContent = `共 ${results.length} 種組合`;
+            resultsCount.textContent = `共 ${results.length} 列資料`;
             
             if (results.length > 0) {
                 copyBtn.disabled = false;
-                let html = '<ul class="space-y-2">';
-                results.forEach((res, index) => {
-                    const num = String(index + 1).padStart(2, '0');
+                let html = '';
+                results.forEach((res) => {
                     html += `
-                        <li class="flex">
-                            <span class="text-slate-500 mr-4 select-none">${num}.</span>
-                            <span class="text-emerald-300">${res}</span>
-                        </li>
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="px-4 py-2 border-x border-slate-200 text-center text-slate-700 whitespace-nowrap">${res.seq}</td>
+                            <td class="px-4 py-2 border-r border-slate-200 text-slate-700">${res.desc}</td>
+                            <td class="px-4 py-2 border-r border-slate-200 text-center text-slate-700 whitespace-nowrap">${res.taskNo}</td>
+                        </tr>
                     `;
                 });
-                html += '</ul>';
                 resultsContainer.innerHTML = html;
             } else {
                 copyBtn.disabled = true;
                 resultsContainer.innerHTML = `
-                    <div class="flex h-full items-center justify-center text-slate-500 py-8">
-                        請先勾選上方的項目，然後點擊「產生」按鈕
-                    </div>
+                    <tr>
+                        <td colspan="3" class="px-6 py-8 text-center text-slate-500">
+                            請先勾選上方的項目，然後點擊「產生」按鈕
+                        </td>
+                    </tr>
                 `;
             }
         }
@@ -225,24 +263,67 @@
                 }
             };
             f([], array);
+            // 依照長度排序，符合圖片中的情境遞增順序
             return result.sort((a, b) => a.length - b.length);
         };
 
         function generateCombinations() {
-            const reqSelected = requiredItems.filter(i => i.checked).map(i => i.text);
-            const sitSelected = situationalItems.filter(i => i.checked).map(i => i.text);
+            const prefixVal = prefixInput.value;
+            const addSkip = skipCheckbox.checked;
 
-            if (reqSelected.length === 0 && sitSelected.length === 0) {
+            const reqActive = requiredItems.filter(i => i.checked);
+            const sitActive = situationalItems.filter(i => i.checked);
+
+            if (reqActive.length === 0 && sitActive.length === 0) {
                 results = [];
                 renderResults();
                 return;
             }
 
-            const situationalSubsets = getSubsets(sitSelected);
-            results = situationalSubsets.map(subset => {
-                const fullCombo = [...reqSelected, ...subset];
-                return fullCombo.join(' + ');
-            }).filter(str => str.length > 0);
+            // 1. 自動配發 Task No
+            let currentTaskNo = 1;
+            const assignedReq = reqActive.map(i => ({ ...i, taskNo: currentTaskNo++ }));
+            const assignedSit = sitActive.map(i => ({ ...i, taskNo: currentTaskNo++ }));
+
+            // 2. 取得情境的子集合
+            const situationalSubsets = getSubsets(assignedSit);
+
+            // 3. 組合並格式化字串
+            results = situationalSubsets.map((subset, index) => {
+                const fullCombo = [...assignedReq, ...subset];
+                
+                // 處理 DESCRIPTION 串接文法 (A, B and C)
+                const texts = fullCombo.map(i => i.text);
+                let desc = prefixVal;
+                
+                if (texts.length === 1) {
+                    desc += texts[0];
+                } else if (texts.length === 2) {
+                    desc += texts[0] + ' and ' + texts[1];
+                } else if (texts.length > 2) {
+                    const last = texts[texts.length - 1];
+                    const rest = texts.slice(0, -1);
+                    desc += rest.join(', ') + ' and ' + last;
+                }
+
+                // 處理 RMA_TASK_NO 串接
+                const taskNoStr = fullCombo.map(i => i.taskNo).join(',');
+
+                return {
+                    desc: desc,
+                    taskNo: taskNoStr,
+                    seq: index + 1
+                };
+            });
+
+            // 4. 結尾是否加入 Skip execution
+            if (addSkip) {
+                results.push({
+                    desc: "Skip this execution",
+                    taskNo: "NULL",
+                    seq: results.length + 1
+                });
+            }
 
             renderResults();
         }
@@ -257,6 +338,10 @@
             sitSubmit.disabled = !e.target.value.trim();
         });
 
+        // 監聽設定變更直接重新產生
+        prefixInput.addEventListener('input', generateCombinations);
+        skipCheckbox.addEventListener('change', generateCombinations);
+
         // 新增項目
         reqForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -266,6 +351,7 @@
                 reqInput.value = '';
                 reqSubmit.disabled = true;
                 updateAll();
+                generateCombinations(); // 新增完自動產生
             }
         });
 
@@ -277,6 +363,7 @@
                 sitInput.value = '';
                 sitSubmit.disabled = true;
                 updateAll();
+                generateCombinations(); // 新增完自動產生
             }
         });
 
@@ -286,6 +373,7 @@
                 const id = e.target.dataset.id;
                 requiredItems = requiredItems.map(item => item.id === id ? { ...item, checked: e.target.checked } : item);
                 updateAll();
+                generateCombinations();
             }
         });
         reqList.addEventListener('click', (e) => {
@@ -294,6 +382,7 @@
                 const id = btn.dataset.id;
                 requiredItems = requiredItems.filter(item => item.id !== id);
                 updateAll();
+                generateCombinations();
             }
         });
 
@@ -303,6 +392,7 @@
                 const id = e.target.dataset.id;
                 situationalItems = situationalItems.map(item => item.id === id ? { ...item, checked: e.target.checked } : item);
                 updateAll();
+                generateCombinations();
             }
         });
         sitList.addEventListener('click', (e) => {
@@ -311,36 +401,47 @@
                 const id = btn.dataset.id;
                 situationalItems = situationalItems.filter(item => item.id !== id);
                 updateAll();
+                generateCombinations();
             }
         });
 
         // 產生按鈕
         generateBtn.addEventListener('click', generateCombinations);
 
-        // 複製按鈕
+        // 複製按鈕 (使用 TSV 格式以支援 Excel 直接貼上)
         copyBtn.addEventListener('click', () => {
             if (results.length === 0) return;
-            const textToCopy = results.join('\n');
+            
+            // 組合標題與資料行為 TSV (Tab-Separated Values)
+            let tsvContent = "ITEM\tDESCRIPTION\tRMA_TASK_NO\n";
+            results.forEach(res => {
+                tsvContent += `${res.seq}\t${res.desc}\t${res.taskNo}\n`;
+            });
+
             const textArea = document.createElement("textarea");
-            textArea.value = textToCopy;
+            textArea.value = tsvContent;
             document.body.appendChild(textArea);
             textArea.select();
+            
             try {
                 document.execCommand('copy');
-                // 變更按鈕狀態
-                copyBtn.classList.remove('bg-white', 'text-slate-600');
-                copyBtn.classList.add('bg-emerald-100', 'text-emerald-700');
+                // 變更按鈕狀態為成功
+                copyBtn.classList.replace('bg-blue-50', 'bg-emerald-100');
+                copyBtn.classList.replace('border-blue-200', 'border-emerald-200');
+                copyBtn.classList.replace('text-blue-700', 'text-emerald-700');
                 copyIcon.innerHTML = checkSVG;
-                copyText.textContent = '已複製！';
+                copyText.textContent = '已複製！請前往 Excel 貼上';
                 
                 setTimeout(() => {
-                    copyBtn.classList.add('bg-white', 'text-slate-600');
-                    copyBtn.classList.remove('bg-emerald-100', 'text-emerald-700');
+                    copyBtn.classList.replace('bg-emerald-100', 'bg-blue-50');
+                    copyBtn.classList.replace('border-emerald-200', 'border-blue-200');
+                    copyBtn.classList.replace('text-emerald-700', 'text-blue-700');
                     copyIcon.innerHTML = copySVG;
-                    copyText.textContent = '複製全部';
-                }, 2000);
+                    copyText.textContent = '一鍵複製 (可直接貼上 Excel)';
+                }, 3000);
             } catch (err) {
                 console.error('Failed to copy', err);
+                alert("複製失敗，請手動選取表格複製。");
             }
             document.body.removeChild(textArea);
         });
