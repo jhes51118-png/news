@@ -1,380 +1,292 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>蓋倫 S15 不滅坦克流攻略 | 德瑪西亞之盾</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Noto Sans TC', sans-serif;
-            background-color: #0f172a; /* 更深沈的藍色，強調厚重感 */
-            color: #e2e8f0;
-        }
-        .text-gold {
-            color: #fbbf24;
-        }
-        .bg-gold {
-            background-color: #fbbf24;
-        }
-        .border-gold {
-            border-color: #fbbf24;
-        }
-        .tank-gradient {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-        }
-        .card-hover {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(96, 165, 250, 0.1);
-        }
-        .skill-key {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #1e293b;
-            border: 2px solid #94a3b8;
-            color: #e2e8f0;
-            font-weight: bold;
-            border-radius: 4px;
-        }
-        .nav-link {
-            position: relative;
-        }
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -4px;
-            left: 0;
-            background-color: #fbbf24;
-            transition: width 0.3s;
-        }
-        .nav-link:hover::after {
-            width: 100%;
-        }
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0f172a;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #475569;
-            border-radius: 4px;
-        }
-    </style>
-</head>
-<body class="tank-gradient min-h-screen flex flex-col">
+import React, { useState, useEffect } from 'react';
+import { Plus, Trash2, Copy, Check, Settings2, Wrench } from 'lucide-react';
 
-    <!-- Navbar -->
-    <nav class="sticky top-0 z-50 bg-[#0f172a]/95 backdrop-blur-md border-b border-gray-700 shadow-lg">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <i class="fas fa-shield-alt text-3xl text-green-500"></i>
-                <h1 class="text-2xl font-bold tracking-wider text-white">GAREN <span class="text-green-500 text-sm font-normal ml-2">TANK BUILD</span></h1>
-            </div>
-            <div class="hidden md:flex gap-8 text-sm font-medium text-gray-300">
-                <a href="#overview" class="nav-link hover:text-green-400 transition">總覽</a>
-                <a href="#runes" class="nav-link hover:text-green-400 transition">不滅符文</a>
-                <a href="#items" class="nav-link hover:text-green-400 transition">坦克出裝</a>
-                <a href="#gameplay" class="nav-link hover:text-green-400 transition">實戰技巧</a>
-            </div>
-            <button class="md:hidden text-green-500 text-xl" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden bg-[#1e293b] border-t border-gray-700 p-4">
-            <a href="#overview" class="block py-2 text-gray-300 hover:text-green-400">總覽</a>
-            <a href="#runes" class="block py-2 text-gray-300 hover:text-green-400">符文</a>
-            <a href="#items" class="block py-2 text-gray-300 hover:text-green-400">出裝</a>
-            <a href="#gameplay" class="block py-2 text-gray-300 hover:text-green-400">玩法</a>
-        </div>
-    </nav>
+export default function App() {
+  // 初始預設資料，符合你的範例
+  const [requiredItems, setRequiredItems] = useState([
+    { id: 'r1', text: '必選1', checked: true },
+    { id: 'r2', text: '必選2', checked: true },
+  ]);
 
-    <!-- Hero Section -->
-    <header id="overview" class="relative pt-20 pb-32 overflow-hidden">
-        <div class="absolute inset-0 bg-[url('https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Garen_0.jpg')] bg-cover bg-center opacity-20"></div>
-        <div class="absolute inset-0 bg-gradient-to-b from-[#0f172a]/80 to-[#0f172a]"></div>
+  const [situationalItems, setSituationalItems] = useState([
+    { id: 's1', text: '情境選1', checked: true },
+    { id: 's2', text: '情境選2', checked: true },
+  ]);
+
+  const [newRequired, setNewRequired] = useState('');
+  const [newSituational, setNewSituational] = useState('');
+  const [results, setResults] = useState([]);
+  const [copied, setCopied] = useState(false);
+
+  // 處理勾選狀態切換
+  const toggleItem = (type, id) => {
+    if (type === 'required') {
+      setRequiredItems(items =>
+        items.map(item => (item.id === id ? { ...item, checked: !item.checked } : item))
+      );
+    } else {
+      setSituationalItems(items =>
+        items.map(item => (item.id === id ? { ...item, checked: !item.checked } : item))
+      );
+    }
+  };
+
+  // 處理新增項目
+  const addItem = (type, e) => {
+    e.preventDefault();
+    if (type === 'required' && newRequired.trim()) {
+      setRequiredItems([
+        ...requiredItems,
+        { id: Date.now().toString(), text: newRequired.trim(), checked: true },
+      ]);
+      setNewRequired('');
+    } else if (type === 'situational' && newSituational.trim()) {
+      setSituationalItems([
+        ...situationalItems,
+        { id: Date.now().toString(), text: newSituational.trim(), checked: true },
+      ]);
+      setNewSituational('');
+    }
+  };
+
+  // 處理刪除項目
+  const deleteItem = (type, id) => {
+    if (type === 'required') {
+      setRequiredItems(items => items.filter(item => item.id !== id));
+    } else {
+      setSituationalItems(items => items.filter(item => item.id !== id));
+    }
+  };
+
+  // 產生所有可能的子集合 (Power Set) 演算法，並保持原始順序
+  const getSubsets = (array) => {
+    const result = [];
+    const f = (prefix, arr) => {
+      result.push(prefix);
+      for (let i = 0; i < arr.length; i++) {
+        f([...prefix, arr[i]], arr.slice(i + 1));
+      }
+    };
+    f([], array);
+    // 依照長度排序，讓少項目的排前面 (符合範例格式)
+    return result.sort((a, b) => a.length - b.length);
+  };
+
+  // 產生最終的排列組合
+  const generateCombinations = () => {
+    const reqSelected = requiredItems.filter(item => item.checked).map(item => item.text);
+    const sitSelected = situationalItems.filter(item => item.checked).map(item => item.text);
+
+    if (reqSelected.length === 0 && sitSelected.length === 0) {
+      setResults([]);
+      return;
+    }
+
+    const situationalSubsets = getSubsets(sitSelected);
+
+    const combinedResults = situationalSubsets.map(subset => {
+      const fullCombo = [...reqSelected, ...subset];
+      return fullCombo.join(' + ');
+    }).filter(str => str.length > 0); // 過濾掉完全空白的組合
+
+    setResults(combinedResults);
+    setCopied(false);
+  };
+
+  // 複製到剪貼簿
+  const copyToClipboard = () => {
+    const textToCopy = results.join('\n');
+    // 使用 fallback 方案確保在各種環境下都能複製
+    const textArea = document.createElement("textarea");
+    textArea.value = textToCopy;
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy', err);
+    }
+    document.body.removeChild(textArea);
+  };
+
+  // 初始載入時自動產生一次結果
+  useEffect(() => {
+    generateCombinations();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-slate-50 p-4 md:p-8 font-sans text-slate-800">
+      <div className="max-w-5xl mx-auto space-y-6">
         
-        <div class="container mx-auto px-4 relative z-10 text-center">
-            <div class="inline-block px-4 py-1 border border-green-500/50 rounded-full bg-green-500/10 text-green-400 text-xs font-bold mb-6 tracking-widest uppercase">
-                S15 Tank Meta
-            </div>
-            <h2 class="text-5xl md:text-7xl font-black text-white mb-6 leading-tight">
-                屹立不搖，<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600">絕對防禦。</span>
-            </h2>
-            <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-10">
-                不需要躲草叢，不需要複雜連招。
-                <br>正面硬剛，吸收傷害，成為隊伍最堅實的盾牌。
-            </p>
-            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="#items" class="px-8 py-3 bg-green-600 text-white font-bold rounded hover:bg-green-700 transition shadow-[0_0_15px_rgba(34,197,94,0.4)]">
-                    查看坦克出裝
-                </a>
-                <a href="#runes" class="px-8 py-3 border border-gray-600 text-gray-300 font-bold rounded hover:border-green-400 hover:text-green-400 transition">
-                    符文配置
-                </a>
-            </div>
+        {/* 標題區 */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex items-center space-x-4">
+          <div className="bg-blue-100 p-3 rounded-xl text-blue-600">
+            <Wrench size={28} />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-800">維修料排列組合產生器</h1>
+            <p className="text-slate-500 text-sm mt-1">勾選必選與情境項目，快速展開所有可能的用料組合。</p>
+          </div>
         </div>
-    </header>
 
-    <!-- Content Container -->
-    <main class="container mx-auto px-4 -mt-20 relative z-20 space-y-24 mb-20">
-
-        <!-- Runes Section -->
-        <section id="runes">
-            <div class="flex items-center gap-4 mb-8">
-                <div class="h-1 w-12 bg-green-500"></div>
-                <h2 class="text-3xl font-bold text-white">符文配置：不滅之握</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* 左側：必選項目 */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col h-full">
+            <div className="flex items-center space-x-2 mb-4">
+              <div className="w-2 h-6 bg-red-400 rounded-full"></div>
+              <h2 className="text-lg font-semibold">必選項目</h2>
             </div>
             
-            <div class="grid md:grid-cols-2 gap-8">
-                <!-- Grasp of the Undying -->
-                <div class="bg-[#1e293b] border border-green-900/50 p-6 rounded-xl card-hover relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 bg-green-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">坦克首選</div>
-                    <div class="flex items-start gap-4 mb-6">
-                        <div class="w-16 h-16 rounded-full bg-green-900/50 border-2 border-green-400 flex items-center justify-center text-green-300 text-3xl">
-                            <i class="fas fa-hand-holding-heart"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-2xl font-bold text-green-100">不滅之握 (Grasp)</h3>
-                            <p class="text-green-300/80 text-sm mt-1">普攻偷取生命上限，越打越坦</p>
-                        </div>
-                    </div>
-                    
-                    <div class="space-y-4">
-                        <div class="flex items-center gap-3 text-gray-300">
-                            <span class="w-8 h-8 rounded bg-green-900/30 flex items-center justify-center text-xs border border-green-800">主</span>
-                            <div class="flex flex-col">
-                                <span class="font-bold text-white">堅決系</span>
-                                <span class="text-sm text-gray-400">爆破 • 骨甲/回春 • 過度生長</span>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-3 text-gray-300">
-                            <span class="w-8 h-8 rounded bg-yellow-900/30 flex items-center justify-center text-xs border border-yellow-800">副</span>
-                            <div class="flex flex-col">
-                                <span class="font-bold text-white">精準系</span>
-                                <span class="text-sm text-gray-400">凱旋 • 傳奇:韌性</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-gray-700 text-sm text-gray-400">
-                        <i class="fas fa-lightbulb text-yellow-500 mr-1"></i> 
-                        <strong>核心思路：</strong> 對線期每 4 秒就上去 A 一下對手，不僅回血還能永久增加血量。
-                    </div>
-                </div>
+            <form onSubmit={(e) => addItem('required', e)} className="flex mb-4 gap-2">
+              <input
+                type="text"
+                value={newRequired}
+                onChange={(e) => setNewRequired(e.target.value)}
+                placeholder="輸入必選料號/名稱..."
+                className="flex-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent transition-all"
+              />
+              <button
+                type="submit"
+                disabled={!newRequired.trim()}
+                className="bg-slate-800 hover:bg-slate-700 disabled:bg-slate-300 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center"
+              >
+                <Plus size={20} />
+              </button>
+            </form>
 
-                <!-- Secondary Option -->
-                <div class="bg-[#1e293b] border border-gray-700 p-6 rounded-xl card-hover group opacity-75 hover:opacity-100 transition">
-                    <div class="flex items-start gap-4 mb-6">
-                        <div class="w-16 h-16 rounded-full bg-yellow-900/30 border-2 border-yellow-600 flex items-center justify-center text-yellow-500 text-3xl">
-                            <i class="fas fa-fist-raised"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-2xl font-bold text-yellow-100">征服者 (Conqueror)</h3>
-                            <p class="text-yellow-500/80 text-sm mt-1">持續作戰型坦克</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-400 text-sm mb-4">
-                        如果你對線的是另一個超級坦克（如賽恩、奧恩），征服者能提供持續作戰的回血能力。
-                        <br><br>
-                        出裝依然走坦克路線，但符文提供額外的吸血與攻擊力。
-                    </p>
-                </div>
+            <div className="flex-1 overflow-y-auto max-h-64 pr-2 space-y-2">
+              {requiredItems.length === 0 ? (
+                <p className="text-slate-400 text-center py-4 text-sm">尚未加入任何必選項目</p>
+              ) : (
+                requiredItems.map(item => (
+                  <div key={item.id} className={`flex items-center justify-between p-3 rounded-lg border transition-all ${item.checked ? 'border-red-200 bg-red-50/50' : 'border-slate-100 bg-slate-50'}`}>
+                    <label className="flex items-center space-x-3 cursor-pointer flex-1">
+                      <input
+                        type="checkbox"
+                        checked={item.checked}
+                        onChange={() => toggleItem('required', item.id)}
+                        className="w-5 h-5 rounded border-slate-300 text-red-500 focus:ring-red-400 cursor-pointer accent-red-500"
+                      />
+                      <span className={`${item.checked ? 'text-slate-800 font-medium' : 'text-slate-500'}`}>
+                        {item.text}
+                      </span>
+                    </label>
+                    <button onClick={() => deleteItem('required', item.id)} className="text-slate-400 hover:text-red-500 p-1 transition-colors">
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                ))
+              )}
             </div>
-        </section>
+          </div>
 
-        <!-- Items Section -->
-        <section id="items">
-            <div class="flex items-center gap-4 mb-8">
-                <div class="h-1 w-12 bg-green-500"></div>
-                <h2 class="text-3xl font-bold text-white">坦克出裝</h2>
+          {/* 右側：情境項目 */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col h-full">
+            <div className="flex items-center space-x-2 mb-4">
+              <div className="w-2 h-6 bg-blue-400 rounded-full"></div>
+              <h2 className="text-lg font-semibold">情境項目</h2>
             </div>
+            
+            <form onSubmit={(e) => addItem('situational', e)} className="flex mb-4 gap-2">
+              <input
+                type="text"
+                value={newSituational}
+                onChange={(e) => setNewSituational(e.target.value)}
+                placeholder="輸入情境料號/名稱..."
+                className="flex-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
+              />
+              <button
+                type="submit"
+                disabled={!newSituational.trim()}
+                className="bg-slate-800 hover:bg-slate-700 disabled:bg-slate-300 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center"
+              >
+                <Plus size={20} />
+              </button>
+            </form>
 
-            <!-- Build Path -->
-            <div class="bg-[#1e293b] border border-green-500/30 rounded-xl p-8 shadow-2xl relative">
-                <div class="absolute -top-3 left-8 bg-green-600 text-white font-bold px-4 py-1 text-sm rounded">又坦又痛的出裝順序</div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 items-center mt-4">
-                    <!-- Item 1 -->
-                    <div class="text-center group">
-                        <div class="w-20 h-20 mx-auto bg-[#0f172a] border-2 border-purple-400 rounded-lg mb-3 flex items-center justify-center text-4xl text-purple-400 group-hover:scale-110 transition duration-300">
-                            <i class="fas fa-gavel"></i>
-                        </div>
-                        <h4 class="text-purple-300 font-bold">挺進破壞者</h4>
-                        <p class="text-xs text-gray-400 mt-1">唯一攻擊裝<br>清兵+緩速</p>
-                    </div>
-                    
-                    <i class="fas fa-arrow-right text-gray-600 hidden md:block text-center text-xl"></i>
-
-                    <!-- Item 2 -->
-                    <div class="text-center group">
-                        <div class="w-20 h-20 mx-auto bg-[#0f172a] border-2 border-white rounded-lg mb-3 flex items-center justify-center text-4xl text-gray-300 group-hover:scale-110 transition duration-300">
-                            <i class="fas fa-shoe-prints"></i>
-                        </div>
-                        <h4 class="text-white font-bold">鐵板/水星鞋</h4>
-                        <p class="text-xs text-gray-400 mt-1">看對手陣容<br>物防或韌性</p>
-                    </div>
-
-                    <i class="fas fa-arrow-right text-gray-600 hidden md:block text-center text-xl"></i>
-
-                    <!-- Item 3 -->
-                    <div class="text-center group">
-                        <div class="w-20 h-20 mx-auto bg-[#0f172a] border-2 border-orange-500 rounded-lg mb-3 flex items-center justify-center text-4xl text-orange-500 group-hover:scale-110 transition duration-300">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <h4 class="text-orange-400 font-bold">亡者板甲</h4>
-                        <p class="text-xs text-gray-400 mt-1">跑速核心<br>防禦+機動性</p>
-                    </div>
-                    
-                    <i class="fas fa-arrow-right text-gray-600 hidden md:block text-center text-xl"></i>
-
-                    <!-- Item 4 -->
-                    <div class="text-center group">
-                        <div class="w-20 h-20 mx-auto bg-[#0f172a] border-2 border-green-500 rounded-lg mb-3 flex items-center justify-center text-4xl text-green-500 group-hover:scale-110 transition duration-300 shadow-[0_0_15px_rgba(34,197,94,0.3)]">
-                            <i class="fas fa-biohazard"></i>
-                        </div>
-                        <h4 class="text-green-400 font-bold">加克秀</h4>
-                        <p class="text-xs text-gray-400 mt-1">雙防神器<br>越打越硬</p>
-                    </div>
-                </div>
+            <div className="flex-1 overflow-y-auto max-h-64 pr-2 space-y-2">
+              {situationalItems.length === 0 ? (
+                <p className="text-slate-400 text-center py-4 text-sm">尚未加入任何情境項目</p>
+              ) : (
+                situationalItems.map(item => (
+                  <div key={item.id} className={`flex items-center justify-between p-3 rounded-lg border transition-all ${item.checked ? 'border-blue-200 bg-blue-50/50' : 'border-slate-100 bg-slate-50'}`}>
+                    <label className="flex items-center space-x-3 cursor-pointer flex-1">
+                      <input
+                        type="checkbox"
+                        checked={item.checked}
+                        onChange={() => toggleItem('situational', item.id)}
+                        className="w-5 h-5 rounded border-slate-300 text-blue-500 focus:ring-blue-400 cursor-pointer accent-blue-500"
+                      />
+                      <span className={`${item.checked ? 'text-slate-800 font-medium' : 'text-slate-500'}`}>
+                        {item.text}
+                      </span>
+                    </label>
+                    <button onClick={() => deleteItem('situational', item.id)} className="text-slate-400 hover:text-red-500 p-1 transition-colors">
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                ))
+              )}
             </div>
-
-            <!-- Situational Items -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                <div class="bg-[#1e293b] p-4 rounded border border-gray-700 hover:border-green-500/50 transition">
-                    <h5 class="text-sm text-red-400 font-bold mb-1">荊棘之甲 (反甲)</h5>
-                    <p class="text-xs text-gray-500">打普攻角/回血角必出</p>
-                </div>
-                <div class="bg-[#1e293b] p-4 rounded border border-gray-700 hover:border-green-500/50 transition">
-                    <h5 class="text-sm text-green-400 font-bold mb-1">自然之力</h5>
-                    <p class="text-xs text-gray-500">對面法師多時出</p>
-                </div>
-                <div class="bg-[#1e293b] p-4 rounded border border-gray-700 hover:border-green-500/50 transition">
-                    <h5 class="text-sm text-purple-400 font-bold mb-1">史特拉克手套</h5>
-                    <p class="text-xs text-gray-500">防止被瞬間秒殺</p>
-                </div>
-                <div class="bg-[#1e293b] p-4 rounded border border-gray-700 hover:border-green-500/50 transition">
-                    <h5 class="text-sm text-orange-400 font-bold mb-1">蘭頓之兆</h5>
-                    <p class="text-xs text-gray-500">對抗暴擊流射手</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Gameplay Tips -->
-        <section id="gameplay" class="grid md:grid-cols-2 gap-8">
-            <div>
-                <div class="flex items-center gap-4 mb-6">
-                    <div class="h-1 w-12 bg-green-500"></div>
-                    <h2 class="text-3xl font-bold text-white">實戰技巧 (不陰人版)</h2>
-                </div>
-                <div class="space-y-4">
-                    <div class="bg-[#1e293b] p-5 rounded-lg border-l-4 border-green-500">
-                        <h4 class="font-bold text-white mb-2">🛡️ 賴線發育 (W技能)</h4>
-                        <p class="text-gray-400 text-sm">
-                            坦克流不用急著殺人。利用被動回血，沒血就退到塔下發呆 10 秒。
-                            <br>W 技能被動疊滿後提供大量雙防，這是你比別人硬的資本，記得多補兵。
-                        </p>
-                    </div>
-                    <div class="bg-[#1e293b] p-5 rounded-lg border-l-4 border-blue-500">
-                        <h4 class="font-bold text-white mb-2">⚔️ 團戰定位：門神</h4>
-                        <p class="text-gray-400 text-sm">
-                            不要繞後！站在自家射手/法師前面。
-                            <br>對面刺客衝進來 -> <strong>Q 沉默他</strong> -> <strong>E 轉他在他臉上</strong>。
-                            <br>只要你活著，隊友就能輸出。
-                        </p>
-                    </div>
-                    <div class="bg-[#1e293b] p-5 rounded-lg border-l-4 border-purple-500">
-                        <h4 class="font-bold text-white mb-2">💥 大招斬殺前排</h4>
-                        <p class="text-gray-400 text-sm">
-                            因為你不出暴擊，秒軟皮比較難。
-                            <br>建議把 R 留給對面的坦克或戰士，利用真實傷害幫助隊友快速解決對方的前排。
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Stats/Counters -->
-            <div class="bg-[#0f172a] border border-gray-700 p-6 rounded-xl">
-                <h3 class="text-xl font-bold text-gray-300 mb-6 flex items-center gap-2">
-                    <i class="fas fa-chess-rook"></i> 坦克流對線心法
-                </h3>
-                <ul class="space-y-4 text-gray-400 text-sm">
-                    <li class="flex gap-3">
-                        <i class="fas fa-check text-green-500 mt-1"></i>
-                        <div>
-                            <strong>不滅之握怎麼用？</strong>
-                            <br>進入戰鬥狀態 4 秒後普攻會發光。看到發光就上去敲對面一下，敲完就走，不要貪。
-                        </div>
-                    </li>
-                    <li class="flex gap-3">
-                        <i class="fas fa-check text-green-500 mt-1"></i>
-                        <div>
-                            <strong>被風箏怎麼辦？</strong>
-                            <br>坦裝蓋倫腿比較短。如果追不到人，就回頭保隊友，不要被對面拉著跑。亡者板甲+自然之力會是你後期追人的資本。
-                        </div>
-                    </li>
-                    <li class="flex gap-3">
-                        <i class="fas fa-check text-green-500 mt-1"></i>
-                        <div>
-                            <strong>什麼時候出反甲？</strong>
-                            <br>打劍姬 (Fiora)、亞托克斯 (Aatrox)、華威 (Warwick) 這種回血怪，第一件出個 800 元的小反甲 (棘刺背心) 有奇效。
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-[#0f172a] border-t border-gray-800 py-12 mt-auto">
-        <div class="container mx-auto px-4 text-center">
-            <h2 class="text-2xl font-bold text-green-500 mb-4">DEMACIA</h2>
-            <p class="text-gray-600 text-sm max-w-md mx-auto">
-                "正義，由我親手締造。" - 蓋倫
-            </p>
-            <p class="text-xs text-gray-800 mt-8">
-                &copy; 2025 League Guide.
-            </p>
+          </div>
         </div>
-    </footer>
 
-    <script>
-        // Smooth scroll
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
-        });
+        {/* 執行按鈕 */}
+        <div className="flex justify-center py-2">
+          <button
+            onClick={generateCombinations}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg shadow-blue-200 hover:shadow-blue-300 transition-all transform hover:-translate-y-0.5 flex items-center space-x-2"
+          >
+            <Settings2 size={24} />
+            <span>一鍵產生排列組合</span>
+          </button>
+        </div>
 
-        // Animation
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('opacity-100', 'translate-y-0');
-                    entry.target.classList.remove('opacity-0', 'translate-y-10');
-                }
-            });
-        }, { threshold: 0.1 });
+        {/* 結果顯示區 */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="bg-slate-50 border-b border-slate-200 p-4 px-6 flex items-center justify-between">
+            <h2 className="text-lg font-semibold flex items-center space-x-2">
+              <span>產生結果</span>
+              <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded-full">
+                共 {results.length} 種組合
+              </span>
+            </h2>
+            <button
+              onClick={copyToClipboard}
+              disabled={results.length === 0}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                copied 
+                  ? 'bg-emerald-100 text-emerald-700' 
+                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
+            >
+              {copied ? <Check size={16} /> : <Copy size={16} />}
+              <span>{copied ? '已複製！' : '複製全部'}</span>
+            </button>
+          </div>
+          
+          <div className="p-6 bg-slate-800 text-slate-50 font-mono text-sm sm:text-base leading-relaxed overflow-x-auto min-h-[150px]">
+            {results.length > 0 ? (
+              <ul className="space-y-2">
+                {results.map((res, index) => (
+                  <li key={index} className="flex">
+                    <span className="text-slate-500 mr-4 select-none">{String(index + 1).padStart(2, '0')}.</span>
+                    <span className="text-emerald-300">{res}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="flex h-full items-center justify-center text-slate-500 py-8">
+                請先勾選上方的項目，然後點擊「產生」按鈕
+              </div>
+            )}
+          </div>
+        </div>
 
-        document.querySelectorAll('section > div').forEach((el) => {
-            el.classList.add('transition', 'duration-700', 'opacity-0', 'translate-y-10');
-            observer.observe(el);
-        });
-    </script>
-</body>
-</html>
+      </div>
+    </div>
+  );
+}
