@@ -1,455 +1,552 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>維修料排列組合產生器</title>
-    <!-- 引入 Tailwind CSS 進行樣式渲染 -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* 自訂卷軸樣式 */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 3px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
 </head>
-<body class="min-h-screen bg-slate-50 p-4 md:p-8 font-sans text-slate-800">
-    <div class="max-w-6xl mx-auto space-y-6">
-        
-        <!-- 標題區 -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex items-center space-x-4">
-            <div class="bg-blue-100 p-3 rounded-xl text-blue-600">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-                </svg>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#06080C;font-family:'Noto Sans TC',sans-serif}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:5px}
+  ::-webkit-scrollbar-track{background:transparent}
+  @keyframes dzpulse{0%,100%{border-color:rgba(53,201,217,.3)}50%{border-color:rgba(53,201,217,.7)}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:radial-gradient(120% 80% at 80% -10%,#0F1A24 0%,#080C12 45%,#06080C 100%);color:#EAEEF3;font-family:'Noto Sans TC',sans-serif">
+
+  <!-- TOP BAR -->
+  <div style="position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;padding:20px 48px;background:rgba(6,8,12,.82);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08)">
+    <div style="display:flex;align-items:center;gap:16px">
+      <div style="font-family:'Space Grotesk';font-weight:700;letter-spacing:2px;font-size:20px">ASUS</div>
+      <div style="width:1px;height:18px;background:rgba(255,255,255,.25)"></div>
+      <div style="font-size:16px;color:#A9B4C4">筆電紮實度數據儀表板</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px">
+      <sc-if value="{{ fileName }}" hint-placeholder-val=""><div style="font-family:'IBM Plex Mono';font-size:14px;color:#8B97A8;display:flex;align-items:center;gap:8px"><span style="width:7px;height:7px;border-radius:50%;background:#4FD1A5;display:inline-block"></span>{{ fileName }}</div></sc-if>
+      <label style="cursor:pointer;font-size:15px;padding:10px 22px;border-radius:6px;background:#35C9D9;color:#06080C;font-weight:700;display:inline-flex;align-items:center;gap:8px">匯入 .xlsx<input type="file" accept=".xlsx" onChange="{{ onFile }}" style="display:none"></label>
+    </div>
+  </div>
+
+  <!-- EMPTY / DROP STATE -->
+  <sc-if value="{{ showIntro }}" hint-placeholder-val="{{ true }}">
+    <div style="max-width:960px;margin:0 auto;padding:70px 40px 90px">
+      <div style="font-family:'IBM Plex Mono';font-size:15px;letter-spacing:5px;color:#35C9D9">UPLOAD · AUTO-ANALYZE</div>
+      <h1 style="font-size:52px;font-weight:900;margin-top:14px;line-height:1.1">匯入測試數據，<br>自動生成紮實度圖表</h1>
+      <p style="font-size:21px;color:#A9B4C4;line-height:1.65;margin-top:20px;max-width:740px">將「手感紮實度測試數據統整」Excel 檔拖入下方區域，系統會在瀏覽器端直接解析，自動辨識上蓋、系統端與競品資料，生成排名圖表，並可依機種或材質進行比較。</p>
+
+      <div onDragOver="{{ onDragOver }}" onDrop="{{ onDrop }}" style="margin-top:40px;border:2px dashed rgba(53,201,217,.4);border-radius:14px;background:linear-gradient(160deg,rgba(16,24,32,.6),rgba(11,16,22,.4));padding:64px 40px;text-align:center;animation:dzpulse 3s ease-in-out infinite">
+        <div style="width:72px;height:72px;border-radius:50%;border:1px solid rgba(53,201,217,.4);display:flex;align-items:center;justify-content:center;margin:0 auto 22px">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#35C9D9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+        </div>
+        <div style="font-size:23px;font-weight:700">拖曳 .xlsx 檔到這裡</div>
+        <div style="font-size:17px;color:#8B97A8;margin-top:8px">或使用右上角「匯入」按鈕</div>
+        <div style="margin-top:26px;display:flex;gap:14px;justify-content:center">
+          <label style="cursor:pointer;font-size:15px;padding:11px 24px;border-radius:6px;background:#35C9D9;color:#06080C;font-weight:700">選擇檔案<input type="file" accept=".xlsx" onChange="{{ onFile }}" style="display:none"></label>
+          <button onClick="{{ loadSample }}" style="cursor:pointer;font-size:15px;padding:11px 24px;border-radius:6px;background:transparent;color:#EAEEF3;border:1px solid rgba(255,255,255,.2);font-family:inherit">載入範例資料</button>
+        </div>
+      </div>
+
+      <sc-if value="{{ parsing }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:26px;display:flex;align-items:center;gap:14px;color:#35C9D9;font-size:17px"><span style="width:20px;height:20px;border:2px solid rgba(53,201,217,.3);border-top-color:#35C9D9;border-radius:50%;display:inline-block;animation:spin .8s linear infinite"></span>解析中…</div>
+      </sc-if>
+      <sc-if value="{{ error }}" hint-placeholder-val=""><div style="margin-top:26px;color:#EF6E7E;font-size:17px;background:rgba(239,110,126,.1);border:1px solid rgba(239,110,126,.3);border-radius:8px;padding:16px 20px">{{ error }}</div></sc-if>
+
+      <div style="margin-top:48px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
+        <div style="background:#0E141B;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:24px 26px"><div style="font-family:'IBM Plex Mono';color:#35C9D9;font-size:22px">01</div><div style="font-size:18px;font-weight:700;margin-top:8px">自動辨識工作表</div><div style="font-size:15px;color:#8B97A8;margin-top:6px;line-height:1.5">上蓋大面區、系統端 C/D、競品對標</div></div>
+        <div style="background:#0E141B;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:24px 26px"><div style="font-family:'IBM Plex Mono';color:#5B8DEF;font-size:22px">02</div><div style="font-size:18px;font-weight:700;margin-top:8px">機種比較工作台</div><div style="font-size:15px;color:#8B97A8;margin-top:6px;line-height:1.5">自選多台機種並排比較行程與評分</div></div>
+        <div style="background:#0E141B;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:24px 26px"><div style="font-family:'IBM Plex Mono';color:#4FD1A5;font-size:22px">03</div><div style="font-size:18px;font-weight:700;margin-top:8px">材質鄰近機種推薦</div><div style="font-size:15px;color:#8B97A8;margin-top:6px;line-height:1.5">依設計/面板/材質自動找出最相近機種</div></div>
+      </div>
+      <div style="margin-top:22px;font-size:14px;color:#5A6678;line-height:1.6">＊解析完全在你的瀏覽器本機進行，檔案不會上傳到任何伺服器。建議使用原始格式的「手感紮實度測試數據統整.xlsx」。</div>
+    </div>
+  </sc-if>
+
+  <!-- DASHBOARD -->
+  <sc-if value="{{ loaded }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:1300px;margin:0 auto;padding:36px 48px 110px">
+
+      <!-- KPI ROW -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px">
+        <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+          <div style="background:linear-gradient(160deg,#101820,#0B1016);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:22px 24px">
+            <div style="font-size:14px;color:#8B97A8;letter-spacing:1px">{{ k.label }}</div>
+            <div style="font-family:'IBM Plex Mono';font-size:36px;font-weight:600;margin-top:8px;color:{{ k.color }}">{{ k.val }}<span style="font-size:16px;color:#8B97A8"> {{ k.unit }}</span></div>
+            <div style="font-size:15px;color:#C4CCD8;margin-top:6px">{{ k.sub }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="margin-top:14px;font-family:'IBM Plex Mono';font-size:13px;color:#5A6678;letter-spacing:.5px">{{ metaLine }}</div>
+
+      <!-- TABS -->
+      <div style="margin-top:26px;display:flex;gap:10px;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:18px">
+        <button onClick="{{ goOverview }}" style="{{ tabOverviewStyle }}">總覽排名</button>
+        <button onClick="{{ goCompare }}" style="{{ tabCompareStyle }}">機種比較 / 鄰近推薦</button>
+      </div>
+
+      <!-- ===== OVERVIEW PANEL ===== -->
+      <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ true }}">
+       <div>
+        <!-- OWN CD -->
+        <div style="margin-top:30px;background:#0B1016;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:32px 38px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between">
+            <div><div style="font-family:'IBM Plex Mono';font-size:14px;letter-spacing:3px;color:#35C9D9">SYSTEM C/D · 自家機種</div><h2 style="font-size:28px;font-weight:800;margin-top:8px">系統端中位行程排名</h2></div>
+            <div style="font-size:15px;color:#8B97A8">行程 (mm) · 越短越紮實 · 共 {{ ownCDCount }} 筆</div>
+          </div>
+          <div style="margin-top:24px">
+            <sc-for list="{{ ownCD }}" as="row" hint-placeholder-count="0">
+              <div style="display:flex;align-items:center;gap:18px;margin-bottom:10px">
+                <div style="width:230px;text-align:right;font-size:17px;font-weight:600;color:#D5DCE6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ row.name }}</div>
+                <div style="flex:1;height:24px;background:rgba(255,255,255,.05);border-radius:3px;position:relative;overflow:hidden"><div style="position:absolute;left:0;top:0;bottom:0;width:{{ row.pct }}%;background:{{ row.color }};border-radius:3px"></div></div>
+                <div style="width:58px;text-align:right;font-family:'IBM Plex Mono';font-size:18px;color:{{ row.color }}">{{ row.disp }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <!-- OWN LID -->
+        <div style="margin-top:24px;background:#0B1016;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:32px 38px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between">
+            <div><div style="font-family:'IBM Plex Mono';font-size:14px;letter-spacing:3px;color:#5B8DEF">A-COVER · 自家機種</div><h2 style="font-size:28px;font-weight:800;margin-top:8px">上蓋中央剛性排名</h2></div>
+            <div style="font-size:15px;color:#8B97A8">0.42kg 中央行程 (mm) · 越短越紮實 · 共 {{ ownLidCount }} 筆</div>
+          </div>
+          <div style="margin-top:24px">
+            <sc-for list="{{ ownLid }}" as="row" hint-placeholder-count="0">
+              <div style="display:flex;align-items:center;gap:18px;margin-bottom:10px">
+                <div style="width:230px;text-align:right;font-size:17px;font-weight:600;color:#D5DCE6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ row.name }}</div>
+                <div style="flex:1;height:24px;background:rgba(255,255,255,.05);border-radius:3px;position:relative;overflow:hidden"><div style="position:absolute;left:0;top:0;bottom:0;width:{{ row.pct }}%;background:{{ row.color }};border-radius:3px"></div></div>
+                <div style="width:58px;text-align:right;font-family:'IBM Plex Mono';font-size:18px;color:{{ row.color }}">{{ row.disp }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <!-- COMPETITORS -->
+        <div style="margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:24px">
+          <div style="background:#0B1016;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:30px 34px">
+            <div style="font-family:'IBM Plex Mono';font-size:14px;letter-spacing:3px;color:#9B8CEF">COMPETITIVE · 系統端</div>
+            <h2 style="font-size:24px;font-weight:800;margin-top:8px">競品系統端中位行程</h2>
+            <div style="font-size:14px;color:#8B97A8;margin-top:4px">行程 (mm) · 越短越剛 · 共 {{ compCDCount }} 筆</div>
+            <div style="margin-top:20px">
+              <sc-for list="{{ compCD }}" as="row" hint-placeholder-count="0">
+                <div style="display:flex;align-items:center;gap:14px;margin-bottom:9px">
+                  <div style="width:175px;text-align:right;font-size:14px;font-weight:600;color:#D5DCE6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ row.name }}</div>
+                  <div style="flex:1;height:20px;background:rgba(255,255,255,.05);border-radius:3px;position:relative;overflow:hidden"><div style="position:absolute;left:0;top:0;bottom:0;width:{{ row.pct }}%;background:{{ row.color }};border-radius:3px"></div></div>
+                  <div style="width:46px;text-align:right;font-family:'IBM Plex Mono';font-size:15px;color:{{ row.color }}">{{ row.disp }}</div>
+                </div>
+              </sc-for>
             </div>
-            <div>
-                <h1 class="text-2xl font-bold text-slate-800">維修料排列組合產生器 <span class="text-sm font-normal text-slate-500 ml-2">(Excel 專用版)</span></h1>
-                <p class="text-slate-500 text-sm mt-1">勾選項目並點擊產生，可直接將表格複製貼上至 Excel 中。</p>
+          </div>
+          <div style="background:#0B1016;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:30px 34px">
+            <div style="font-family:'IBM Plex Mono';font-size:14px;letter-spacing:3px;color:#9B8CEF">COMPETITIVE · 上蓋</div>
+            <h2 style="font-size:24px;font-weight:800;margin-top:8px">競品上蓋綜合評分</h2>
+            <div style="font-size:14px;color:#8B97A8;margin-top:4px">評分 · 越高越紮實 · 共 {{ compLidCount }} 筆</div>
+            <div style="margin-top:20px">
+              <sc-for list="{{ compLid }}" as="row" hint-placeholder-count="0">
+                <div style="display:flex;align-items:center;gap:14px;margin-bottom:9px">
+                  <div style="width:175px;text-align:right;font-size:14px;font-weight:600;color:#D5DCE6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ row.name }}</div>
+                  <div style="flex:1;height:20px;background:rgba(255,255,255,.05);border-radius:3px;position:relative;overflow:hidden"><div style="position:absolute;left:0;top:0;bottom:0;width:{{ row.pct }}%;background:{{ row.color }};border-radius:3px"></div></div>
+                  <div style="width:46px;text-align:right;font-family:'IBM Plex Mono';font-size:15px;color:{{ row.color }}">{{ row.disp }}</div>
+                </div>
+              </sc-for>
             </div>
+          </div>
+        </div>
+       </div>
+      </sc-if>
+
+      <!-- ===== COMPARE PANEL ===== -->
+      <sc-if value="{{ isCompare }}" hint-placeholder-val="{{ false }}">
+       <div style="margin-top:30px;display:grid;grid-template-columns:400px 1fr;gap:26px;align-items:start">
+
+        <!-- CONTROLS -->
+        <div style="display:flex;flex-direction:column;gap:18px">
+          <!-- reference + neighbors -->
+          <div style="background:#0B1016;border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:22px 24px">
+            <div style="font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:#4FD1A5"></span>材質鄰近推薦</div>
+            <div style="font-size:13px;color:#8B97A8;margin-top:6px;line-height:1.5">選一台參考機種，系統依設計 / 面板 / 三大件材質找出最相近者。</div>
+            <select value="{{ refModel }}" onChange="{{ setRef }}" style="margin-top:14px;width:100%;padding:11px 12px;border-radius:7px;background:#0E141B;color:#EAEEF3;border:1px solid rgba(255,255,255,.14);font-family:inherit;font-size:15px">
+              <option value="">— 選擇參考機種 —</option>
+              <sc-for list="{{ refOptions }}" as="o" hint-placeholder-count="0"><option value="{{ o.norm }}">{{ o.label }}</option></sc-for>
+            </select>
+            <div style="margin-top:12px;display:flex;gap:10px;align-items:center">
+              <button onClick="{{ findNeighbors }}" style="flex:1;cursor:pointer;font-size:15px;padding:11px 14px;border-radius:7px;background:#35C9D9;color:#06080C;font-weight:700;border:none;font-family:inherit">找出鄰近機種</button>
+              <select value="{{ nNeighbors }}" onChange="{{ setN }}" style="padding:11px 10px;border-radius:7px;background:#0E141B;color:#EAEEF3;border:1px solid rgba(255,255,255,.14);font-family:inherit;font-size:15px"><option value="3">3 台</option><option value="5">5 台</option><option value="8">8 台</option></select>
+            </div>
+            <sc-if value="{{ note }}" hint-placeholder-val=""><div style="margin-top:12px;font-size:13px;color:#4FD1A5;background:rgba(79,209,165,.08);border:1px solid rgba(79,209,165,.25);border-radius:7px;padding:10px 12px;line-height:1.5">{{ note }}</div></sc-if>
+          </div>
+
+          <!-- material filters -->
+          <div style="background:#0B1016;border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:22px 24px">
+            <div style="font-size:16px;font-weight:700">材質篩選</div>
+            <div style="font-size:14px;color:#8B97A8;margin-top:14px;margin-bottom:8px">上蓋設計</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ designChips }}" as="c" hint-placeholder-count="0"><span onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</span></sc-for></div>
+            <div style="font-size:14px;color:#8B97A8;margin-top:16px;margin-bottom:8px">面板類型</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ panelChips }}" as="c" hint-placeholder-count="0"><span onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</span></sc-for></div>
+            <div style="font-size:14px;color:#8B97A8;margin-top:16px;margin-bottom:8px">三大件材質（金屬件數）</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ partsChips }}" as="c" hint-placeholder-count="0"><span onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</span></sc-for></div>
+          </div>
+
+          <!-- model checklist -->
+          <div style="background:#0B1016;border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:22px 24px">
+            <div style="display:flex;align-items:center;justify-content:space-between"><div style="font-size:16px;font-weight:700">機種清單</div><div style="font-size:13px;color:#8B97A8">{{ filteredCount }} / {{ poolCount }} 台</div></div>
+            <input value="{{ search }}" onChange="{{ onSearch }}" placeholder="搜尋機種…" style="margin-top:12px;width:100%;padding:10px 12px;border-radius:7px;background:#0E141B;color:#EAEEF3;border:1px solid rgba(255,255,255,.14);font-family:inherit;font-size:14px">
+            <div style="margin-top:12px;max-height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:4px">
+              <sc-for list="{{ filtered }}" as="m" hint-placeholder-count="0">
+                <div onClick="{{ m.toggle }}" style="{{ m.rowStyle }}">
+                  <span style="{{ m.boxStyle }}">{{ m.check }}</span>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:14px;font-weight:600;color:#E8ECF1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ m.name }}</div>
+                    <div style="font-size:11px;color:#7A8699;font-family:'IBM Plex Mono'">{{ m.tagText }}</div>
+                  </div>
+                  <span style="font-size:11px;color:{{ m.sourceColor }};border:1px solid {{ m.sourceColor }}44;border-radius:4px;padding:1px 6px">{{ m.source }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="margin-top:12px;display:flex;gap:10px;align-items:center;justify-content:space-between">
+              <button onClick="{{ selectAllFiltered }}" style="cursor:pointer;font-size:13px;padding:8px 12px;border-radius:6px;background:transparent;color:#35C9D9;border:1px solid rgba(53,201,217,.4);font-family:inherit">加入全部符合</button>
+              <button onClick="{{ clearSel }}" style="cursor:pointer;font-size:13px;padding:8px 12px;border-radius:6px;background:transparent;color:#8B97A8;border:1px solid rgba(255,255,255,.14);font-family:inherit">清除（{{ selectedCount }}）</button>
+            </div>
+          </div>
         </div>
 
-        <!-- 基本設定區 -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-            <h2 class="text-lg font-semibold mb-4 flex items-center space-x-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-500"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-                <span>輸出格式設定</span>
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">描述前綴 (Description Prefix)</label>
-                    <input type="text" id="prefix-input" value="Replace " class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+        <!-- RESULTS -->
+        <div>
+          <sc-if value="{{ hasSelection }}" hint-placeholder-val="{{ false }}">
+           <div>
+            <!-- attribute table -->
+            <div style="background:#0B1016;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:26px 30px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between"><h2 style="font-size:24px;font-weight:800">已選機種比較</h2><div style="font-size:14px;color:#8B97A8">{{ selectedCount }} 台 · 點欄位數值越低越紮實</div></div>
+              <div style="margin-top:18px;display:flex;align-items:center;gap:12px;padding:0 6px 10px;border-bottom:1px solid rgba(255,255,255,.1);font-size:12px;color:#7A8699;font-family:'IBM Plex Mono'">
+                <div style="flex:1;min-width:0">機種</div><div style="width:50px;text-align:center">來源</div><div style="width:64px;text-align:center">設計</div><div style="width:56px;text-align:center">面板</div><div style="width:56px;text-align:center">三大件</div><div style="width:72px;text-align:right">系統端</div><div style="width:64px;text-align:right">上蓋</div><div style="width:54px;text-align:right">評分</div>
+              </div>
+              <sc-for list="{{ selectedRecords }}" as="r" hint-placeholder-count="0">
+                <div style="display:flex;align-items:center;gap:12px;padding:11px 6px;border-bottom:1px solid rgba(255,255,255,.05)">
+                  <div style="flex:1;min-width:0;font-size:15px;font-weight:600;color:#E8ECF1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.star }}{{ r.name }}</div>
+                  <div style="width:50px;text-align:center;font-size:12px;color:{{ r.sourceColor }}">{{ r.source }}</div>
+                  <div style="width:64px;text-align:center;font-size:13px;color:#C4CCD8">{{ r.design }}</div>
+                  <div style="width:56px;text-align:center;font-size:13px;color:#C4CCD8">{{ r.panel }}</div>
+                  <div style="width:56px;text-align:center;font-size:13px;color:#C4CCD8">{{ r.parts }}</div>
+                  <div style="width:72px;text-align:right;font-family:'IBM Plex Mono';font-size:15px;color:{{ r.cdColor }}">{{ r.cdDisp }}</div>
+                  <div style="width:64px;text-align:right;font-family:'IBM Plex Mono';font-size:15px;color:{{ r.lidColor }}">{{ r.lidDisp }}</div>
+                  <div style="width:54px;text-align:right;font-family:'IBM Plex Mono';font-size:15px;color:#A9B4C4">{{ r.scoreDisp }}</div>
                 </div>
-                <div class="flex items-center">
-                    <label class="flex items-center space-x-3 cursor-pointer mt-5">
-                        <input type="checkbox" id="skip-checkbox" checked class="w-5 h-5 rounded border-slate-300 text-blue-500 focus:ring-blue-400 accent-blue-500 cursor-pointer">
-                        <span class="text-slate-700 font-medium select-none">結尾加上 "Skip this execution"</span>
-                    </label>
-                </div>
+              </sc-for>
             </div>
+
+            <!-- CD compare bars -->
+            <div style="margin-top:22px;background:#0B1016;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:26px 30px">
+              <div style="font-family:'IBM Plex Mono';font-size:13px;letter-spacing:2px;color:#35C9D9">SYSTEM C/D</div>
+              <h3 style="font-size:20px;font-weight:700;margin-top:6px">系統端中位行程比較（mm，越短越紮實）</h3>
+              <div style="margin-top:18px">
+                <sc-for list="{{ compareCD }}" as="row" hint-placeholder-count="0">
+                  <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px">
+                    <div style="width:220px;text-align:right;font-size:15px;font-weight:600;color:#D5DCE6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ row.name }}</div>
+                    <div style="flex:1;height:24px;background:rgba(255,255,255,.05);border-radius:3px;position:relative;overflow:hidden"><div style="position:absolute;left:0;top:0;bottom:0;width:{{ row.pct }}%;background:{{ row.color }};border-radius:3px"></div></div>
+                    <div style="width:56px;text-align:right;font-family:'IBM Plex Mono';font-size:17px;color:{{ row.color }}">{{ row.disp }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <!-- LID compare bars -->
+            <div style="margin-top:22px;background:#0B1016;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:26px 30px">
+              <div style="font-family:'IBM Plex Mono';font-size:13px;letter-spacing:2px;color:#5B8DEF">A-COVER</div>
+              <h3 style="font-size:20px;font-weight:700;margin-top:6px">上蓋中央行程比較（0.42kg，mm，越短越紮實）</h3>
+              <div style="margin-top:18px">
+                <sc-for list="{{ compareLid }}" as="row" hint-placeholder-count="0">
+                  <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px">
+                    <div style="width:220px;text-align:right;font-size:15px;font-weight:600;color:#D5DCE6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ row.name }}</div>
+                    <div style="flex:1;height:24px;background:rgba(255,255,255,.05);border-radius:3px;position:relative;overflow:hidden"><div style="position:absolute;left:0;top:0;bottom:0;width:{{ row.pct }}%;background:{{ row.color }};border-radius:3px"></div></div>
+                    <div style="width:56px;text-align:right;font-family:'IBM Plex Mono';font-size:17px;color:{{ row.color }}">{{ row.disp }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+           </div>
+          </sc-if>
+          <sc-if value="{{ noSelection }}" hint-placeholder-val="{{ true }}">
+            <div style="background:#0B1016;border:1px dashed rgba(255,255,255,.14);border-radius:12px;padding:80px 40px;text-align:center">
+              <div style="width:60px;height:60px;border-radius:50%;border:1px solid rgba(53,201,217,.35);display:flex;align-items:center;justify-content:center;margin:0 auto 20px"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#35C9D9" stroke-width="2"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/></svg></div>
+              <div style="font-size:20px;font-weight:700">尚未選擇機種</div>
+              <div style="font-size:16px;color:#8B97A8;margin-top:10px;line-height:1.6">從左側清單勾選要比較的機種，<br>或選一台參考機種後按「找出鄰近機種」。</div>
+            </div>
+          </sc-if>
         </div>
+       </div>
+      </sc-if>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- 左側：必選項目 -->
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col h-full">
-                <div class="flex items-center space-x-2 mb-4">
-                    <div class="w-2 h-6 bg-red-400 rounded-full"></div>
-                    <h2 class="text-lg font-semibold">必選項目 <span class="text-sm font-normal text-slate-500 ml-1">(自動配發前段 Task No)</span></h2>
-                </div>
-                
-                <form id="req-form" class="flex mb-4 gap-2">
-                    <input type="text" id="req-input" placeholder="輸入必選料號/名稱..." class="flex-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent transition-all">
-                    <button type="submit" id="req-submit" disabled class="bg-slate-800 hover:bg-slate-700 disabled:bg-slate-300 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-                    </button>
-                </form>
-
-                <div id="req-list" class="flex-1 overflow-y-auto max-h-48 pr-2 space-y-2">
-                    <!-- 動態產生必選項目 -->
-                </div>
-            </div>
-
-            <!-- 右側：情境項目 -->
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col h-full">
-                <div class="flex items-center space-x-2 mb-4">
-                    <div class="w-2 h-6 bg-blue-400 rounded-full"></div>
-                    <h2 class="text-lg font-semibold">情境項目 <span class="text-sm font-normal text-slate-500 ml-1">(自動配發後段 Task No)</span></h2>
-                </div>
-                
-                <form id="sit-form" class="flex mb-4 gap-2">
-                    <input type="text" id="sit-input" placeholder="輸入情境料號/名稱..." class="flex-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all">
-                    <button type="submit" id="sit-submit" disabled class="bg-slate-800 hover:bg-slate-700 disabled:bg-slate-300 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-                    </button>
-                </form>
-
-                <div id="sit-list" class="flex-1 overflow-y-auto max-h-48 pr-2 space-y-2">
-                    <!-- 動態產生情境項目 -->
-                </div>
-            </div>
-        </div>
-
-        <!-- 執行按鈕 -->
-        <div class="flex justify-center py-2">
-            <button id="generate-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg shadow-blue-200 hover:shadow-blue-300 transition-all transform hover:-translate-y-0.5 flex items-center space-x-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="7" r="3"/><circle cx="7" cy="17" r="3"/></svg>
-                <span>一鍵產生表格</span>
-            </button>
-        </div>
-
-        <!-- 結果顯示區 -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-slate-50 border-b border-slate-200 p-4 px-6 flex items-center justify-between">
-                <h2 class="text-lg font-semibold flex items-center space-x-2">
-                    <span>產生結果</span>
-                    <span id="results-count" class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded-full">
-                        共 0 列資料
-                    </span>
-                </h2>
-                <button id="copy-btn" disabled class="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 hover:text-blue-800 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-white disabled:border-slate-200 disabled:text-slate-400">
-                    <span id="copy-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-                    </span>
-                    <span id="copy-text" class="font-bold">一鍵複製 (可直接貼上 Excel)</span>
-                </button>
-            </div>
-            
-            <div class="bg-white overflow-x-auto">
-                <table class="min-w-full divide-y divide-slate-200 text-sm">
-                    <thead class="bg-slate-100">
-                        <tr>
-                            <th scope="col" class="px-4 py-3 text-center font-bold text-slate-700 border-x border-slate-200">ITEM</th>
-                            <th scope="col" class="px-4 py-3 text-left font-bold text-slate-700 border-r border-slate-200">DESCRIPTION</th>
-                            <th scope="col" class="px-4 py-3 text-center font-bold text-slate-700 border-r border-slate-200">RMA_TASK_NO</th>
-                        </tr>
-                    </thead>
-                    <tbody id="results-container" class="divide-y divide-slate-200 bg-white">
-                        <!-- 動態產生結果 -->
-                        <tr>
-                            <td colspan="3" class="px-6 py-8 text-center text-slate-500">
-                                請先勾選上方的項目，然後點擊「產生」按鈕
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+      <div style="margin-top:30px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;font-size:14px;color:#8B97A8">
+        <span style="display:flex;align-items:center;gap:7px"><span style="width:12px;height:12px;border-radius:2px;background:#4FD1A5"></span>優異</span>
+        <span style="display:flex;align-items:center;gap:7px"><span style="width:12px;height:12px;border-radius:2px;background:#5B8DEF"></span>良好</span>
+        <span style="display:flex;align-items:center;gap:7px"><span style="width:12px;height:12px;border-radius:2px;background:#F2B05A"></span>普通</span>
+        <span style="display:flex;align-items:center;gap:7px"><span style="width:12px;height:12px;border-radius:2px;background:#EF6E7E"></span>待改善</span>
+        <span style="margin-left:auto;color:#5A6678;font-family:'IBM Plex Mono'">中位行程＝各標準點位中位數 · 評分越高代表越接近/優於標竿</span>
+      </div>
 
     </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1300,&quot;height&quot;:960}}">
+class Component extends DCLogic {
+  state = { loaded:false, parsing:false, error:'', fileName:'', data:null,
+            tab:'overview', selected:[], refModel:'', nNeighbors:5,
+            fDesign:[], fPanel:[], fParts:[], search:'', note:'' };
 
-    <!-- JavaScript 邏輯 -->
-    <script>
-        // --- 狀態管理 (預設代入圖片中的資料) ---
-        let requiredItems = [
-            { id: 'r1', text: 'LCD Cover(A part)', checked: true },
-        ];
-        let situationalItems = [
-            { id: 's1', text: 'LCD BEZEL', checked: true },
-            { id: 's2', text: 'HINGE', checked: true },
-            { id: 's3', text: 'LCD PANEL', checked: true },
-        ];
-        let results = [];
+  // ---------- file handlers ----------
+  onFile = (e) => { const f = e.target && e.target.files && e.target.files[0]; if (f) this.processFile(f); };
+  onDragOver = (e) => { e.preventDefault(); };
+  onDrop = (e) => { e.preventDefault(); const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]; if (f) this.processFile(f); };
+  loadSample = async () => {
+    this.setState({ parsing:true, error:'' });
+    try { const r = await fetch('uploads/data.xlsx'); if (!r.ok) throw new Error('找不到範例檔'); await this.analyze(await r.arrayBuffer(), '手感紮實度測試數據統整.xlsx (範例)'); }
+    catch (err) { this.setState({ parsing:false, error:'載入範例失敗：' + err.message }); }
+  };
+  async processFile(file) {
+    this.setState({ parsing:true, error:'' });
+    try { await this.analyze(await file.arrayBuffer(), file.name); }
+    catch (err) { this.setState({ parsing:false, error:'解析失敗：' + (err.message || err) }); }
+  }
 
-        // --- DOM 元素綁定 ---
-        const reqList = document.getElementById('req-list');
-        const sitList = document.getElementById('sit-list');
-        const reqForm = document.getElementById('req-form');
-        const sitForm = document.getElementById('sit-form');
-        const reqInput = document.getElementById('req-input');
-        const sitInput = document.getElementById('sit-input');
-        const reqSubmit = document.getElementById('req-submit');
-        const sitSubmit = document.getElementById('sit-submit');
-        
-        const prefixInput = document.getElementById('prefix-input');
-        const skipCheckbox = document.getElementById('skip-checkbox');
+  // ---------- tab + control handlers ----------
+  goOverview = () => this.setState({ tab:'overview' });
+  goCompare = () => this.setState({ tab:'compare' });
+  setRef = (e) => this.setState({ refModel:e.target.value });
+  setN = (e) => this.setState({ nNeighbors:+e.target.value });
+  onSearch = (e) => this.setState({ search:e.target.value });
+  clearSel = () => this.setState({ selected:[], note:'' });
+  toggleModel(norm){ const cur=this.state.selected; this.setState({ selected: cur.includes(norm)?cur.filter(x=>x!==norm):cur.concat(norm) }); }
+  toggleFilter(group,val){ const key={design:'fDesign',panel:'fPanel',parts:'fParts'}[group]; const cur=this.state[key]; this.setState({ [key]: cur.includes(val)?cur.filter(x=>x!==val):cur.concat(val) }); }
+  selectAllFiltered = () => { const add=this.getFiltered().map(m=>m.norm); const set=new Set(this.state.selected.concat(add)); this.setState({ selected:[...set] }); };
+  findNeighbors = () => {
+    const ref=this.state.refModel; if(!ref){ this.setState({ note:'請先選擇一台參考機種。' }); return; }
+    const pool=(this.state.data&&this.state.data.pool)||[]; const R=pool.find(m=>m.norm===ref); if(!R) return;
+    const n=this.state.nNeighbors;
+    const scored=pool.filter(m=>m.norm!==ref).map(m=>{
+      let s=0; const tags=[];
+      if(R.design&&m.design){ if(R.design===m.design){ s+=3; tags.push(m.design);} }
+      if(R.panel&&m.panel){ if(R.panel===m.panel){ s+=2; tags.push(m.panel);} }
+      if(R.parts&&m.parts){ if(R.parts===m.parts){ s+=3; tags.push(m.parts);} }
+      if(R.aMaterial&&m.aMaterial&&R.aMaterial===m.aMaterial){ s+=1; }
+      if(R.cd!=null&&m.cd!=null){ s+=Math.max(0,2-Math.abs(R.cd-m.cd)); }
+      return { norm:m.norm, s, tags };
+    }).sort((a,b)=>b.s-a.s);
+    const picks=scored.slice(0,n);
+    this.setState({ selected:[ref,...picks.map(p=>p.norm)], note:`已以「${R.name}」為基準，選出材質/結構最相近的 ${picks.length} 台機種。` });
+  };
 
-        const generateBtn = document.getElementById('generate-btn');
-        const resultsContainer = document.getElementById('results-container');
-        const resultsCount = document.getElementById('results-count');
-        const copyBtn = document.getElementById('copy-btn');
-        const copyIcon = document.getElementById('copy-icon');
-        const copyText = document.getElementById('copy-text');
+  // ---------- xlsx reader ----------
+  async readXlsx(arrayBuffer) {
+    const bytes = new Uint8Array(arrayBuffer); const dv = new DataView(arrayBuffer);
+    let eocd = -1; for (let i = bytes.length - 22; i >= 0; i--) { if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; } }
+    if (eocd < 0) throw new Error('不是有效的 xlsx 檔');
+    const cdOffset = dv.getUint32(eocd + 16, true), cdCount = dv.getUint16(eocd + 10, true);
+    let p = cdOffset; const entries = {};
+    for (let i = 0; i < cdCount; i++) {
+      const comp = dv.getUint16(p+10,true), csize = dv.getUint32(p+20,true), fnlen = dv.getUint16(p+28,true), extralen = dv.getUint16(p+30,true), commentlen = dv.getUint16(p+32,true), lho = dv.getUint32(p+42,true);
+      entries[new TextDecoder().decode(bytes.subarray(p+46,p+46+fnlen))] = { comp, csize, lho };
+      p += 46 + fnlen + extralen + commentlen;
+    }
+    async function read(name) {
+      const e = entries[name]; if (!e) return null;
+      const fnlen = dv.getUint16(e.lho+26,true), extralen = dv.getUint16(e.lho+28,true);
+      const start = e.lho + 30 + fnlen + extralen; const comp = bytes.subarray(start, start + e.csize);
+      if (e.comp === 0) return comp;
+      const ds = new DecompressionStream('deflate-raw');
+      return new Uint8Array(await new Response(new Response(comp).body.pipeThrough(ds)).arrayBuffer());
+    }
+    const td = new TextDecoder(); const parser = new DOMParser();
+    const ssBytes = await read('xl/sharedStrings.xml'); const sst = [];
+    if (ssBytes) { const doc = parser.parseFromString(td.decode(ssBytes),'application/xml'); const sis = doc.getElementsByTagName('si');
+      for (let i=0;i<sis.length;i++){ const ts=sis[i].getElementsByTagName('t'); let t=''; for(let j=0;j<ts.length;j++)t+=ts[j].textContent; sst.push(t);} }
+    const wbDoc = parser.parseFromString(td.decode(await read('xl/workbook.xml')),'application/xml');
+    const relDoc = parser.parseFromString(td.decode(await read('xl/_rels/workbook.xml.rels')),'application/xml');
+    const relMap = {}; const rels = relDoc.getElementsByTagName('Relationship');
+    for (let i=0;i<rels.length;i++) relMap[rels[i].getAttribute('Id')] = rels[i].getAttribute('Target');
+    const sheets = {}; const shs = wbDoc.getElementsByTagName('sheet');
+    for (let i=0;i<shs.length;i++){ const nm=shs[i].getAttribute('name'); let rid=shs[i].getAttribute('r:id');
+      if(!rid){ const a=shs[i].attributes; for(let k=0;k<a.length;k++) if(a[k].name.endsWith(':id')) rid=a[k].value; }
+      let tgt=(relMap[rid]||'').replace(/^\//,''); if(tgt&&!tgt.startsWith('xl/')) tgt='xl/'+tgt; sheets[nm]=tgt; }
+    function colRow(ref){ const m=/^([A-Z]+)(\d+)$/.exec(ref); if(!m)return null; let c=0; for(const ch of m[1]) c=c*26+(ch.charCodeAt(0)-64); return {col:c-1,row:+m[2]}; }
+    async function sheetRows(path){ const b=await read(path); if(!b)return {}; const doc=parser.parseFromString(td.decode(b),'application/xml'); const rows={}; const cs=doc.getElementsByTagName('c');
+      for(let i=0;i<cs.length;i++){ const c=cs[i]; const ref=c.getAttribute('r'); if(!ref)continue; const cr=colRow(ref); if(!cr)continue; const t=c.getAttribute('t'); let v=null;
+        if(t==='inlineStr'){ const is=c.getElementsByTagName('is')[0]; if(is){ const ts=is.getElementsByTagName('t'); let s=''; for(let j=0;j<ts.length;j++)s+=ts[j].textContent; v=s; } }
+        else { const vn=c.getElementsByTagName('v')[0]; if(vn) v=(t==='s')?sst[+vn.textContent]:vn.textContent; }
+        (rows[cr.row]||(rows[cr.row]={}))[cr.col]=v; }
+      return rows; }
+    return { sheets, sheetRows };
+  }
 
-        // SVG 圖示
-        const trashIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>`;
-        const copySVG = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`;
-        const checkSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+  // ---------- helpers ----------
+  static clean(v){ return v==null?'':String(v).replace(/\s+/g,' ').trim(); }
+  static num(v){ const n=parseFloat(v); return isNaN(n)?null:n; }
+  static norm(name){ return Component.clean(name).toUpperCase().replace(/20\d{2}/g,'').replace(/[^A-Z0-9\u4e00-\u9fff]/g,''); }
+  static sanDesign(v){ const s=String(v||''); if(/glass/i.test(s))return 'Glass'; if(/bezel/i.test(s))return 'Bezel'; if(/mylar/i.test(s))return 'Mylar'; return null; }
+  static sanPanel(v){ const s=String(v||''); const m=/(oled|ltps|tft|mini\s*led|led)/i.exec(s); return m?m[1].toUpperCase().replace(/\s+/g,''):null; }
+  static sanParts(v){ const m=/([0-9])\s*金/.exec(String(v||'')); return m?m[1]+'金':null; }
+  static sanMat(v){ const s=String(v||''); if(/metal/i.test(s))return 'Metal'; if(/plastic/i.test(s))return 'Plastic'; if(/alloy|mg|al\b/i.test(s))return 'Alloy'; return null; }
 
-        // --- 渲染畫面 ---
-        function renderItems(items, container, type) {
-            container.innerHTML = '';
-            if (items.length === 0) {
-                const emptyMsg = document.createElement('p');
-                emptyMsg.className = "text-slate-400 text-center py-4 text-sm";
-                emptyMsg.textContent = `尚未加入任何${type === 'required' ? '必選' : '情境'}項目`;
-                container.appendChild(emptyMsg);
-                return;
-            }
+  // ---------- extraction ----------
+  async analyze(arrayBuffer, fileName) {
+    const wb = await this.readXlsx(arrayBuffer);
+    const names = Object.keys(wb.sheets);
+    const pick = (must, mustNot) => { for (const nm of names){ if (must.every(k=>nm.includes(k)) && (!mustNot||mustNot.every(k=>!nm.includes(k)))) return nm; } return null; };
+    const ownCDName = pick(['系統'],['競']), compCDName = pick(['系統','競']), ownLidName = pick(['A件'],['競']), compLidName = pick(['A件','競']);
+    const C = Component;
+    const rowNums = (rows) => Object.keys(rows).map(Number).sort((a,b)=>a-b);
+    const findRow = (rows, fn) => { for (const r of rowNums(rows)) if (fn(C.clean(rows[r][0]))) return rows[r]; return null; };
+    const lastRow = (rows, fn) => { let h=null; for (const r of rowNums(rows)) if (fn(C.clean(rows[r][0]))) h=rows[r]; return h; };
+    const headerRow = (rows) => findRow(rows, c => c.includes('機種'));
+    const isModel = (v) => { const s=C.clean(v); if(!s)return false; if(/^(Baseline|Min\.?|Max\.?|Sigma|MP|SR|ER|PR)$/i.test(s))return false; if(C.num(s)!=null)return false; return /[A-Za-z]/.test(s)||/\d/.test(s); };
 
-            items.forEach((item, index) => {
-                const div = document.createElement('div');
-                const isReq = type === 'required';
-                const borderColor = item.checked ? (isReq ? 'border-red-200' : 'border-blue-200') : 'border-slate-100';
-                const bgColor = item.checked ? (isReq ? 'bg-red-50/50' : 'bg-blue-50/50') : 'bg-slate-50';
-                const textColor = item.checked ? 'text-slate-800 font-medium' : 'text-slate-500';
-                const accentColor = isReq ? 'accent-red-500 text-red-500 focus:ring-red-400' : 'accent-blue-500 text-blue-500 focus:ring-blue-400';
+    const pool = []; const byNorm = {};
+    const getRec = (name, source) => { const nm = C.norm(name); let r = byNorm[nm]; if(!r){ r = { norm:nm, name:C.clean(name), source, cd:null, lid042:null, lidScore:null, year:null, design:null, panel:null, aMaterial:null, parts:null, stage:null }; byNorm[nm]=r; pool.push(r); } if(source==='自家') r.source='自家'; return r; };
+    const setIf = (r, key, val) => { if(val!=null && r[key]==null) r[key]=val; };
 
-                div.className = `flex items-center justify-between p-3 rounded-lg border transition-all ${borderColor} ${bgColor}`;
-                
-                div.innerHTML = `
-                    <label class="flex items-center space-x-3 cursor-pointer flex-1">
-                        <input type="checkbox" data-id="${item.id}" data-type="${type}" ${item.checked ? 'checked' : ''} class="w-5 h-5 rounded border-slate-300 cursor-pointer ${accentColor}">
-                        <span class="${textColor}">${item.text}</span>
-                    </label>
-                    <button data-id="${item.id}" data-type="${type}" class="delete-btn text-slate-400 hover:text-red-500 p-1 transition-colors">
-                        ${trashIconSVG}
-                    </button>
-                `;
-                container.appendChild(div);
-            });
-        }
+    const processSheet = async (sheetName, source, kind) => {
+      if(!sheetName) return; const rows = await wb.sheetRows(wb.sheets[sheetName]); const hdr = headerRow(rows); if(!hdr) return;
+      const yearR = findRow(rows, c=>c.includes('年份'));
+      const designR = findRow(rows, c=>c.includes('Bezel')||c.includes('設計'));
+      const aMatR = findRow(rows, c=>c.includes('A件材質'));
+      const panelR = findRow(rows, c=>c.includes('Panel'));
+      const partsR = findRow(rows, c=>c.includes('大件'));
+      const stageR = findRow(rows, c=>c==='Stage'||c.includes('Stage'));
+      const medR = kind==='cd' ? findRow(rows, c=>c.includes('Median')) : null;
+      const r042 = kind==='lid' ? findRow(rows, c=>c.includes('0.42')&&c.includes('中央')) : null;
+      const scoreR = kind==='lid' ? lastRow(rows, c=>c.includes('平均分數')) : null;
+      for (const k in hdr){ const col=+k; if(col<1) continue; const hv=hdr[col]; if(!isModel(hv)) continue;
+        const rec = getRec(hv, source);
+        if(yearR){ const m=/20\d{2}/.exec(C.clean(yearR[col])); setIf(rec,'year', m?m[0]:null); }
+        if(designR) setIf(rec,'design', C.sanDesign(designR[col]));
+        if(aMatR) setIf(rec,'aMaterial', C.sanMat(aMatR[col]));
+        if(panelR) setIf(rec,'panel', C.sanPanel(panelR[col]));
+        if(partsR) setIf(rec,'parts', C.sanParts(partsR[col]));
+        if(stageR){ const sv=C.clean(stageR[col]); setIf(rec,'stage', /MP|SR|ER|PR|Refresh/i.test(sv)?sv:null); }
+        if(medR) setIf(rec,'cd', C.num(medR[col]));
+        if(r042) setIf(rec,'lid042', C.num(r042[col]));
+        if(scoreR) setIf(rec,'lidScore', C.num(scoreR[col]));
+      }
+    };
+    await processSheet(ownCDName,'自家','cd');
+    await processSheet(ownLidName,'自家','lid');
+    await processSheet(compCDName,'競品','cd');
+    await processSheet(compLidName,'競品','lid');
 
-        function renderResults() {
-            resultsCount.textContent = `共 ${results.length} 列資料`;
-            
-            if (results.length > 0) {
-                copyBtn.disabled = false;
-                let html = '';
-                results.forEach((res) => {
-                    html += `
-                        <tr class="hover:bg-slate-50 transition-colors">
-                            <td class="px-4 py-2 border-x border-slate-200 text-center text-slate-700 whitespace-nowrap">${res.seq}</td>
-                            <td class="px-4 py-2 border-r border-slate-200 text-slate-700">${res.desc}</td>
-                            <td class="px-4 py-2 border-r border-slate-200 text-center text-slate-700 whitespace-nowrap">${res.taskNo}</td>
-                        </tr>
-                    `;
-                });
-                resultsContainer.innerHTML = html;
-            } else {
-                copyBtn.disabled = true;
-                resultsContainer.innerHTML = `
-                    <tr>
-                        <td colspan="3" class="px-6 py-8 text-center text-slate-500">
-                            請先勾選上方的項目，然後點擊「產生」按鈕
-                        </td>
-                    </tr>
-                `;
-            }
-        }
+    const ownCD = pool.filter(m=>m.source==='自家'&&m.cd!=null).map(m=>({name:m.name,v:m.cd}));
+    const ownLid = pool.filter(m=>m.source==='自家'&&m.lid042!=null).map(m=>({name:m.name,v:m.lid042}));
+    const compCD = pool.filter(m=>m.source==='競品'&&m.cd!=null).map(m=>({name:m.name,v:m.cd}));
+    const compLid = pool.filter(m=>m.source==='競品'&&m.lidScore!=null).map(m=>({name:m.name,v:m.lidScore}));
 
-        function updateAll() {
-            renderItems(requiredItems, reqList, 'required');
-            renderItems(situationalItems, sitList, 'situational');
-        }
+    if (!pool.length){ this.setState({ parsing:false, error:'未能在此檔案辨識出對應的測試資料表，請確認為原始格式的紮實度統整檔。' }); return; }
+    this.setState({ parsing:false, loaded:true, fileName, tab:'overview', selected:[], refModel:'', note:'', fDesign:[], fPanel:[], fParts:[], search:'',
+      data:{ pool, ownCD, compCD, ownLid, compLid, sheetCount:names.length } });
+  }
 
-        // --- 核心邏輯 ---
-        const getSubsets = (array) => {
-            const result = [];
-            const f = (prefix, arr) => {
-                result.push(prefix);
-                for (let i = 0; i < arr.length; i++) {
-                    f([...prefix, arr[i]], arr.slice(i + 1));
-                }
-            };
-            f([], array);
-            // 依照長度排序，符合圖片中的情境遞增順序
-            return result.sort((a, b) => a.length - b.length);
-        };
+  // ---------- view helpers ----------
+  mmColor(v){ return v<=1.6?'#4FD1A5':v<=2.2?'#5B8DEF':v<=2.8?'#F2B05A':'#EF6E7E'; }
+  lidColor(v){ return v<=0.45?'#4FD1A5':v<=0.7?'#5B8DEF':v<=1.0?'#F2B05A':'#EF6E7E'; }
+  scoreColor(s){ return s>=85?'#4FD1A5':s>=70?'#5B8DEF':s>=55?'#F2B05A':'#EF6E7E'; }
+  buildMm(list, colorFn, dec){ if(!list||!list.length)return []; const s=list.slice().sort((a,b)=>a.v-b.v); const max=Math.max.apply(null,s.map(x=>x.v))*1.04||1; return s.map(x=>({name:x.name,disp:x.v.toFixed(dec),pct:Math.max(3,x.v/max*100),color:colorFn.call(this,x.v)})); }
+  buildScore(list){ if(!list||!list.length)return []; const s=list.slice().sort((a,b)=>b.v-a.v); return s.map(x=>({name:x.name,disp:String(Math.round(x.v)),pct:Math.max(3,Math.min(100,x.v)),color:this.scoreColor(x.v)})); }
 
-        function generateCombinations() {
-            const prefixVal = prefixInput.value;
-            const addSkip = skipCheckbox.checked;
+  getFiltered(){
+    const d=this.state.data; if(!d)return [];
+    const {fDesign,fPanel,fParts,search}=this.state; const q=(search||'').trim().toUpperCase();
+    return d.pool.filter(m=>{
+      if(fDesign.length && !fDesign.includes(m.design)) return false;
+      if(fPanel.length && !fPanel.includes(m.panel)) return false;
+      if(fParts.length && !fParts.includes(m.parts)) return false;
+      if(q && !m.name.toUpperCase().includes(q)) return false;
+      return true;
+    });
+  }
 
-            const reqActive = requiredItems.filter(i => i.checked);
-            const sitActive = situationalItems.filter(i => i.checked);
+  renderVals(){
+    const C=Component;
+    const base = { onFile:this.onFile, onDrop:this.onDrop, onDragOver:this.onDragOver, loadSample:this.loadSample,
+      loaded:this.state.loaded, parsing:this.state.parsing, error:this.state.error, fileName:this.state.fileName, showIntro:!this.state.loaded };
+    const d=this.state.data;
+    if(!d) return Object.assign(base,{ kpis:[], ownCD:[], ownLid:[], compCD:[], compLid:[], metaLine:'', ownCDCount:0, ownLidCount:0, compCDCount:0, compLidCount:0,
+      isOverview:true, isCompare:false, tabOverviewStyle:'', tabCompareStyle:'', refOptions:[], refModel:'', nNeighbors:5, note:'', search:'',
+      designChips:[], panelChips:[], partsChips:[], filtered:[], filteredCount:0, poolCount:0, selectedCount:0, hasSelection:false, noSelection:true,
+      selectedRecords:[], compareCD:[], compareLid:[] });
 
-            if (reqActive.length === 0 && sitActive.length === 0) {
-                results = [];
-                renderResults();
-                return;
-            }
+    // overview
+    const ownCD=this.buildMm(d.ownCD,this.mmColor,2), ownLid=this.buildMm(d.ownLid,this.lidColor,2), compCD=this.buildMm(d.compCD,this.mmColor,2), compLid=this.buildScore(d.compLid);
+    const kpis=[]; const cdS=d.ownCD.slice().sort((a,b)=>a.v-b.v), lidS=d.ownLid.slice().sort((a,b)=>a.v-b.v), cpS=d.compCD.slice().sort((a,b)=>a.v-b.v);
+    if(cdS.length) kpis.push({label:'自家最佳系統端',val:cdS[0].v.toFixed(2),unit:'mm',sub:cdS[0].name,color:'#4FD1A5'});
+    if(lidS.length) kpis.push({label:'自家最佳上蓋',val:lidS[0].v.toFixed(2),unit:'mm',sub:lidS[0].name,color:'#5B8DEF'});
+    if(cdS.length){ const w=cdS[cdS.length-1]; kpis.push({label:'系統端待改善',val:w.v.toFixed(2),unit:'mm',sub:w.name,color:'#EF6E7E'}); }
+    if(cpS.length) kpis.push({label:'競品系統端標竿',val:cpS[0].v.toFixed(2),unit:'mm',sub:cpS[0].name,color:'#9B8CEF'});
+    while(kpis.length<4) kpis.push({label:'—',val:'—',unit:'',sub:'',color:'#5A6678'});
+    const metaLine = `已辨識 ${d.sheetCount} 個工作表 · 機種池 ${d.pool.length} 台 · 自家系統端 ${d.ownCD.length} · 自家上蓋 ${d.ownLid.length} · 競品系統端 ${d.compCD.length} · 競品上蓋 ${d.compLid.length}`;
 
-            // 1. 自動配發 Task No
-            let currentTaskNo = 1;
-            const assignedReq = reqActive.map(i => ({ ...i, taskNo: currentTaskNo++ }));
-            const assignedSit = sitActive.map(i => ({ ...i, taskNo: currentTaskNo++ }));
+    // tabs
+    const isOverview=this.state.tab==='overview', isCompare=!isOverview;
+    const tabOn='padding:11px 22px;border-radius:8px;background:#16202B;color:#EAEEF3;border:1px solid rgba(53,201,217,.45);font-weight:700;cursor:pointer;font-family:inherit;font-size:16px';
+    const tabOff='padding:11px 22px;border-radius:8px;background:transparent;color:#8B97A8;border:1px solid rgba(255,255,255,.1);cursor:pointer;font-family:inherit;font-size:16px';
 
-            // 2. 取得情境的子集合
-            const situationalSubsets = getSubsets(assignedSit);
+    // chips
+    const distinct=(key)=>{ const s=[]; for(const m of d.pool){ if(m[key]&&!s.includes(m[key])) s.push(m[key]); } return s.sort(); };
+    const chipOn='cursor:pointer;font-size:14px;padding:7px 14px;border-radius:20px;background:#16202B;color:#EAEEF3;border:1px solid rgba(53,201,217,.5)';
+    const chipOff='cursor:pointer;font-size:14px;padding:7px 14px;border-radius:20px;background:rgba(255,255,255,.04);color:#A9B4C4;border:1px solid rgba(255,255,255,.12)';
+    const mkChips=(vals,active,group)=> vals.map(v=>({ label:v, style:active.includes(v)?chipOn:chipOff, onClick:()=>this.toggleFilter(group,v) }));
+    const designChips=mkChips(distinct('design'),this.state.fDesign,'design');
+    const panelChips=mkChips(distinct('panel'),this.state.fPanel,'panel');
+    const partsChips=mkChips(distinct('parts'),this.state.fParts,'parts');
 
-            // 3. 組合並格式化字串
-            results = situationalSubsets.map((subset, index) => {
-                const fullCombo = [...assignedReq, ...subset];
-                
-                // 處理 DESCRIPTION 串接文法 (A, B and C)
-                const texts = fullCombo.map(i => i.text);
-                let desc = prefixVal;
-                
-                if (texts.length === 1) {
-                    desc += texts[0];
-                } else if (texts.length === 2) {
-                    desc += texts[0] + ' and ' + texts[1];
-                } else if (texts.length > 2) {
-                    const last = texts[texts.length - 1];
-                    const rest = texts.slice(0, -1);
-                    desc += rest.join(', ') + ' and ' + last;
-                }
+    // ref options
+    const refOptions=d.pool.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(m=>({norm:m.norm,label:(m.source==='競品'?'[競] ':'')+m.name}));
 
-                // 處理 RMA_TASK_NO 串接
-                const taskNoStr = fullCombo.map(i => i.taskNo).join(',');
+    // checklist
+    const sel=new Set(this.state.selected);
+    const tagOf=(m)=>[m.design,m.panel,m.parts].filter(Boolean).join(' · ')||'—';
+    const rowBase='display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:7px;cursor:pointer;';
+    const filtered=this.getFiltered().map(m=>{ const on=sel.has(m.norm); return {
+      norm:m.norm, name:m.name, tagText:tagOf(m), source:m.source, sourceColor:m.source==='競品'?'#9B8CEF':'#35C9D9',
+      toggle:()=>this.toggleModel(m.norm), check:on?'✓':'',
+      rowStyle:rowBase+(on?'border:1px solid rgba(53,201,217,.5);background:rgba(53,201,217,.08)':'border:1px solid rgba(255,255,255,.07)'),
+      boxStyle:'width:18px;height:18px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;'+(on?'background:#35C9D9;color:#06080C;font-weight:700':'border:1px solid rgba(255,255,255,.25);color:transparent')
+    }; });
 
-                return {
-                    desc: desc,
-                    taskNo: taskNoStr,
-                    seq: index + 1
-                };
-            });
+    // selected records + compare
+    const selRecs=d.pool.filter(m=>sel.has(m.norm));
+    const ref=this.state.refModel;
+    const fmt=(v,dec)=>v==null?'—':v.toFixed(dec);
+    const selectedRecords=selRecs.slice().sort((a,b)=>{ const av=a.cd==null?9:a.cd, bv=b.cd==null?9:b.cd; return av-bv; }).map(m=>({
+      name:m.name, star:(m.norm===ref?'★ ':''), source:m.source, sourceColor:m.source==='競品'?'#9B8CEF':'#35C9D9',
+      design:m.design||'—', panel:m.panel||'—', parts:m.parts||'—',
+      cdDisp:fmt(m.cd,2), cdColor:m.cd==null?'#5A6678':this.mmColor(m.cd),
+      lidDisp:fmt(m.lid042,2), lidColor:m.lid042==null?'#5A6678':this.lidColor(m.lid042),
+      scoreDisp:m.lidScore==null?'—':String(Math.round(m.lidScore))
+    }));
+    const cdList=selRecs.filter(m=>m.cd!=null).map(m=>({name:m.name,v:m.cd}));
+    const lidList=selRecs.filter(m=>m.lid042!=null).map(m=>({name:m.name,v:m.lid042}));
+    const compareCD=this.buildMm(cdList,this.mmColor,2);
+    const compareLid=this.buildMm(lidList,this.lidColor,2);
 
-            // 4. 結尾是否加入 Skip execution
-            if (addSkip) {
-                results.push({
-                    desc: "Skip this execution",
-                    taskNo: "NULL",
-                    seq: results.length + 1
-                });
-            }
-
-            renderResults();
-        }
-
-        // --- 事件綁定 ---
-        
-        // 輸入框控制按鈕狀態
-        reqInput.addEventListener('input', (e) => {
-            reqSubmit.disabled = !e.target.value.trim();
-        });
-        sitInput.addEventListener('input', (e) => {
-            sitSubmit.disabled = !e.target.value.trim();
-        });
-
-        // 監聽設定變更直接重新產生
-        prefixInput.addEventListener('input', generateCombinations);
-        skipCheckbox.addEventListener('change', generateCombinations);
-
-        // 新增項目
-        reqForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const val = reqInput.value.trim();
-            if (val) {
-                requiredItems.push({ id: Date.now().toString(), text: val, checked: true });
-                reqInput.value = '';
-                reqSubmit.disabled = true;
-                updateAll();
-                generateCombinations(); // 新增完自動產生
-            }
-        });
-
-        sitForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const val = sitInput.value.trim();
-            if (val) {
-                situationalItems.push({ id: Date.now().toString(), text: val, checked: true });
-                sitInput.value = '';
-                sitSubmit.disabled = true;
-                updateAll();
-                generateCombinations(); // 新增完自動產生
-            }
-        });
-
-        // 事件委派：處理勾選與刪除 (必選)
-        reqList.addEventListener('change', (e) => {
-            if (e.target.tagName === 'INPUT') {
-                const id = e.target.dataset.id;
-                requiredItems = requiredItems.map(item => item.id === id ? { ...item, checked: e.target.checked } : item);
-                updateAll();
-                generateCombinations();
-            }
-        });
-        reqList.addEventListener('click', (e) => {
-            const btn = e.target.closest('.delete-btn');
-            if (btn) {
-                const id = btn.dataset.id;
-                requiredItems = requiredItems.filter(item => item.id !== id);
-                updateAll();
-                generateCombinations();
-            }
-        });
-
-        // 事件委派：處理勾選與刪除 (情境)
-        sitList.addEventListener('change', (e) => {
-            if (e.target.tagName === 'INPUT') {
-                const id = e.target.dataset.id;
-                situationalItems = situationalItems.map(item => item.id === id ? { ...item, checked: e.target.checked } : item);
-                updateAll();
-                generateCombinations();
-            }
-        });
-        sitList.addEventListener('click', (e) => {
-            const btn = e.target.closest('.delete-btn');
-            if (btn) {
-                const id = btn.dataset.id;
-                situationalItems = situationalItems.filter(item => item.id !== id);
-                updateAll();
-                generateCombinations();
-            }
-        });
-
-        // 產生按鈕
-        generateBtn.addEventListener('click', generateCombinations);
-
-        // 複製按鈕 (使用 TSV 格式以支援 Excel 直接貼上)
-        copyBtn.addEventListener('click', () => {
-            if (results.length === 0) return;
-            
-            // 組合標題與資料行為 TSV (Tab-Separated Values)
-            let tsvContent = "ITEM\tDESCRIPTION\tRMA_TASK_NO\n";
-            results.forEach(res => {
-                tsvContent += `${res.seq}\t${res.desc}\t${res.taskNo}\n`;
-            });
-
-            const textArea = document.createElement("textarea");
-            textArea.value = tsvContent;
-            document.body.appendChild(textArea);
-            textArea.select();
-            
-            try {
-                document.execCommand('copy');
-                // 變更按鈕狀態為成功
-                copyBtn.classList.replace('bg-blue-50', 'bg-emerald-100');
-                copyBtn.classList.replace('border-blue-200', 'border-emerald-200');
-                copyBtn.classList.replace('text-blue-700', 'text-emerald-700');
-                copyIcon.innerHTML = checkSVG;
-                copyText.textContent = '已複製！請前往 Excel 貼上';
-                
-                setTimeout(() => {
-                    copyBtn.classList.replace('bg-emerald-100', 'bg-blue-50');
-                    copyBtn.classList.replace('border-emerald-200', 'border-blue-200');
-                    copyBtn.classList.replace('text-emerald-700', 'text-blue-700');
-                    copyIcon.innerHTML = copySVG;
-                    copyText.textContent = '一鍵複製 (可直接貼上 Excel)';
-                }, 3000);
-            } catch (err) {
-                console.error('Failed to copy', err);
-                alert("複製失敗，請手動選取表格複製。");
-            }
-            document.body.removeChild(textArea);
-        });
-
-        // 初始化
-        updateAll();
-        generateCombinations();
-
-    </script>
+    return Object.assign(base,{
+      kpis, ownCD, ownLid, compCD, compLid, metaLine,
+      ownCDCount:d.ownCD.length, ownLidCount:d.ownLid.length, compCDCount:d.compCD.length, compLidCount:d.compLid.length,
+      isOverview, isCompare, goOverview:this.goOverview, goCompare:this.goCompare,
+      tabOverviewStyle:isOverview?tabOn:tabOff, tabCompareStyle:isCompare?tabOn:tabOff,
+      refOptions, refModel:this.state.refModel, setRef:this.setRef, nNeighbors:this.state.nNeighbors, setN:this.setN, findNeighbors:this.findNeighbors, note:this.state.note,
+      designChips, panelChips, partsChips,
+      search:this.state.search, onSearch:this.onSearch,
+      filtered, filteredCount:filtered.length, poolCount:d.pool.length,
+      selectAllFiltered:this.selectAllFiltered, clearSel:this.clearSel, selectedCount:this.state.selected.length,
+      hasSelection:selRecs.length>0, noSelection:selRecs.length===0,
+      selectedRecords, compareCD, compareLid
+    });
+  }
+}
+</script>
 </body>
 </html>
